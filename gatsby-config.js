@@ -129,7 +129,7 @@ module.exports = {
         name: `tuka I/O`,
         short_name: `tuka I/O`,
         start_url: `/`,
-        background_color: `#ffffff`,
+        background_color: `#eeeeee`,
         theme_color: `#663399`,
         display: `minimal-ui`,
         icon: `content/assets/gatsby-icon.png`,

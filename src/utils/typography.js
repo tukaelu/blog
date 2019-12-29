@@ -1,17 +1,73 @@
 import Typography from "typography"
-import Wordpress2016 from "typography-theme-wordpress-2016"
+import TypographyTheme from "typography-theme-wordpress-2016"
 
-Wordpress2016.overrideThemeStyles = () => {
+TypographyTheme.overrideThemeStyles = () => {
   return {
-    "a.gatsby-resp-image-link": {
+    a: {
       boxShadow: `none`,
+    },
+    'a.anchor': {
+      borderBottom: 'none',
+    },
+    'a.social': {
+      borderBottom: 'none',
+    },
+    'a.tag': {
+      backgroundColor: TypographyTheme.bodyColor,
+      borderBottom: 'none',
+      borderRadius: '100px',
+      color: 'white',
+      display: 'inline-block',
+      fontSize: typography.rhythm(0.4),
+      marginLeft: '5px',
+      padding: '4px 8px',
+    },
+    small: {
+      color: 'rgba(0, 0, 0, .54)',
+      fontSize: '16px',
+    },
+    blockquote: {
+      fontSize: TypographyTheme.baseFontSize,
+    },
+    ':not(pre)>code': {
+      background: 'rgba(0, 0, 0, .05)',
+      fontFamily: codeFontFamily.join(','),
+      fontSize: '16px',
+      fontWeight: 400,
+      lineHeight: 1.58,
+      letterSpacing: '-.003em',
+      margin: '0 2px',
+      textRendering: 'optimizeLegibility',
+      padding: '3px 4px',
+      wordBreak: 'break-word',
     },
   }
 }
 
-delete Wordpress2016.googleFonts
+const textFontFamily = [
+  'Avenir Next',
+  'Helvetica Neue',
+  'Segoe UI',
+  'Helvetica',
+  'Arial',
+  'sans-serif',
+]
+const codeFontFamily = [
+  'Menlo',
+  'Monaco',
+  '"Courier New"',
+  'Courier',
+  'monospace',
+]
+TypographyTheme.headerFontFamily = textFontFamily
+TypographyTheme.bodyFontFamily = textFontFamily
+TypographyTheme.baseFontSize = '16px'
+TypographyTheme.bodyColor = 'rgba(0, 0, 0, .84)'
+TypographyTheme.headerWeight = 700
 
-const typography = new Typography(Wordpress2016)
+delete TypographyTheme.googleFonts
+
+const typography = new Typography(TypographyTheme)
 
 // Hot reload typography in development.
 if (process.env.NODE_ENV !== `production`) {
