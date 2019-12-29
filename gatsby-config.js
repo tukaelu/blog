@@ -130,7 +130,7 @@ module.exports = {
         short_name: `tuka I/O`,
         start_url: `/`,
         background_color: `#eeeeee`,
-        theme_color: `#663399`,
+        theme_color: `#eeeeee`,
         display: `minimal-ui`,
         icon: `content/assets/tuka.png`,
       },
