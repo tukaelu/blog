@@ -16,6 +16,12 @@ class BlogIndex extends React.Component {
         <SEO title="All posts" />
         {posts.map(({ node }) => {
           const title = node.frontmatter.title || node.fields.slug
+
+          const articlePath
+            = node.frontmatter.path
+              ? node.frontmatter.path
+              : node.fields.slug
+
           return (
             <article key={node.fields.slug}>
               <header>
@@ -24,7 +30,7 @@ class BlogIndex extends React.Component {
                     marginBottom: rhythm(1 / 4),
                   }}
                 >
-                  <Link style={{ boxShadow: `none` }} to={node.fields.slug}>
+                  <Link style={{ boxShadow: `none` }} to={articlePath}>
                     {title}
                   </Link>
                 </h3>
@@ -65,6 +71,7 @@ export const pageQuery = graphql`
             date(formatString: "MMMM DD, YYYY")
             title
             description
+            path
           }
         }
       }
