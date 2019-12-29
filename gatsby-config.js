@@ -144,5 +144,7 @@ module.exports = {
       },
     },
     `gatsby-plugin-sitemap`,
+    `gatsby-plugin-netlify`,
+    `gatsby-plugin-netlify-cache`,
   ],
 }
