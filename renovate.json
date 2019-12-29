@@ -1,0 +1,9 @@
+{
+    "assignees": ["tukaelu"],
+    "extends": [
+      "config:base"
+    ],
+    "labels": ["renovate"],
+    "schedule": "before 8am",
+    "timezone": "Asia/Tokyo"
+  }
