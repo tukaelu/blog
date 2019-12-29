@@ -1,9 +1,16 @@
 {
-    "assignees": ["tukaelu"],
-    "extends": [
-      "config:base"
-    ],
-    "labels": ["renovate"],
-    "schedule": "before 8am",
-    "timezone": "Asia/Tokyo"
+  "assignees": ["tukaelu"],
+  "extends": [
+    "config:base"
+  ],
+  "timezone": "Asia/Tokyo",
+  "schedule": ["every weekend"],
+  "labels": ["renovate"],
+  "patch": { "automerge": true },
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": [
+      "before 3am on the first day of the month"
+    ]
   }
+}
