@@ -46,10 +46,14 @@ module.exports = {
               removeAccents: true,
             },
           },
+          `gatsby-remark-code-titles`,
           {
             resolve: `gatsby-remark-prismjs`,
             options: {
+              classPrefix: "language-",
               noInlineHighlight: true,
+              inlineCodeMarker: null,
+              showLineNumbers: true,
               aliases: {
                 sh: 'bash',
               },

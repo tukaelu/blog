@@ -1,8 +1,9 @@
 // custom typefaces
 import "typeface-montserrat"
 
-// global styles
+// extended styles
 import "./src/styles/global.css"
+import "./src/styles/plugin.css"
 
 // syntax highlight
 import 'prismjs/themes/prism.css'
