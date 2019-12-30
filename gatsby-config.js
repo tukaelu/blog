@@ -182,6 +182,7 @@ module.exports = {
     `gatsby-plugin-sitemap`,
     `gatsby-plugin-netlify`,
     `gatsby-plugin-netlify-cache`,
+    `gatsby-plugin-lodash`,
     {
       resolve: `gatsby-plugin-robots-txt`,
       options: {
