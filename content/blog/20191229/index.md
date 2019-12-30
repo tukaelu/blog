@@ -4,7 +4,7 @@ date: "2019-12-29T09:00:00.000Z"
 path: /posts/hoge/
 description: 
 tags:
-  - ブログ
+  - diary
 ---
 
 
