@@ -12,6 +12,7 @@ export default class Iframely extends React.Component {
     return (
       <Helmet>
         <script type="text/javascript" src="https://cdn.iframe.ly/embed.js" charset="utf-8" />
+        <script type='text/javascript' src='https://500px.com/embed.js' async></script>
       </Helmet>
     )
   }
