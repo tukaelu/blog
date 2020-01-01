@@ -60,7 +60,10 @@ export const pageQuery = graphql`
         title
       }
     }
-    allMarkdownRemark(limit: 2000) {
+    allMarkdownRemark(
+      filter: { fields: { draft: { eq: false } } }
+      limit: 2000
+    ) {
       group(field: frontmatter___tags) {
         fieldValue
         totalCount
