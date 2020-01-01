@@ -209,5 +209,12 @@ module.exports = {
         }
       }
     },
+    {
+      resolve: `gatsby-plugin-draft`,
+      options: {
+        timezone: 'Asia/Tokyo',
+        publishDraft: process.env.NODE_ENV !== 'production',
+      }
+    },
   ],
 }
