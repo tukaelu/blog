@@ -1,0 +1,14 @@
+{
+  "rules": {
+    "ja-hiragana-fukushi": true,
+    "ja-no-abusage": true,
+    "ja-no-redundant-expression": true,
+    "no-mixed-zenkaku-and-hankaku-alphabet": true,
+    "preset-ja-technical-writing": {
+      "ja-no-mixed-period": false,
+      "ja-no-weak-phrase": false,
+      "no-exclamation-question-mark": false,
+      "sentence-length": false
+    }
+  }
+}
