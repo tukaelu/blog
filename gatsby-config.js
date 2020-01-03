@@ -1,6 +1,6 @@
 const {
   NODE_ENV,
-  URL: NETLIFY_SITE_URL = 'https://gatsby-starter-blog-demo.netlify.com',
+  URL: NETLIFY_SITE_URL = 'https://tuka.io',
   DEPLOY_PRIME_URL: NETLIFY_DEPLOY_URL = NETLIFY_SITE_URL,
   CONTEXT: NETLIFY_ENV = NODE_ENV
 } = process.env;
@@ -12,7 +12,7 @@ module.exports = {
     title: `tuka I/O`,
     author: `tuka`,
     description: `opinions are my own.`,
-    siteUrl: `https://gatsby-starter-blog-demo.netlify.com/`,
+    siteUrl: `https://tuka.io/`,
     social: {
       twitter: `tukaelu`,
       github: `tukaelu`,
