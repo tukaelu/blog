@@ -9,7 +9,8 @@
       "ja-no-mixed-period": false,
       "ja-no-weak-phrase": false,
       "no-exclamation-question-mark": false,
-      "sentence-length": false
+      "sentence-length": false,
+      "max-kanji-continuous-len": false
     }
   }
 }
