@@ -1,6 +1,6 @@
 ---
 title: じぶんリリースノート(ver 0.37.2)
-date: '2020-01-04T07:35:00+09:00'
+date: '2020-01-04T07:35:00+00:00'
 path: /posts/release-note-v0-37-2/
 description: '12/31にtukaelu(ver 0.37.2)をリリースしました。'
 tags:
