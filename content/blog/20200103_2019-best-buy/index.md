@@ -59,7 +59,7 @@ YouTuberでも有名な monogram の堀口さんが立ち上げたdripという�
 
 ## iPad mini 第5世代 (Wi-Fi + Cellular)
 
-<div class="iframely-embed"><div class="iframely-responsive" style="height: 140px; padding-bottom: 0;"><a href="https://www.apple.com/jp/ipad-mini/" data-iframely-url="//cdn.iframe.ly/SBbEs4T?iframe=card-small"></a></div></div>
+<div class="iframely-embed"><div class="iframely-responsive" style="height: 140px; padding-bottom: 0;"><a href="https://www.apple.com/jp/ipad-mini/" data-iframely-url="//cdn.iframe.ly/SBbEs4T?iframe=card-small"></a></div></div><br/>
 
 iPad Pro 10.5インチを持っていたのですが電車で立ちながら使うには少しつらく、気づいたら自宅で眠っていたので買い替えました。電車内での読書体験が格段によくなった！
 
@@ -79,3 +79,7 @@ iPad Pro 10.5インチを持っていたのですが電車で立ちながら使�
 こちらも職場絡みで購入。
 
 充電式なので電池交換が不要な点と、歯磨き用途以外に腕時計のステンレスベルトの隙間の掃除などにも使えるので便利です。そしてメッチャ落ちます（初回は驚くくらい出血しますが）
+
+## まとめ
+
+以上が2019年に買ってよかったものです。思い出せてないものもありそうなのでそれらは追記するかも。また今回紹介したものを継続して使ってみたレビューなんかもそのうち書きたいと思います！
