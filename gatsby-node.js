@@ -83,20 +83,10 @@ exports.onCreateNode = ({ node, actions, getNode }) => {
 
   if (node.internal.type === `MarkdownRemark`) {
     const value = createFilePath({ node, getNode })
-
-    const nodeDate = new Date(node.frontmatter.date)
-    const nowDate = new Date()
-    nowDate.setTime(nowDate.getTime() + 1000*60*60*9)
-
     createNodeField({
       name: `slug`,
       node,
       value,
-    })
-    createNodeField({
-      name: `draft`,
-      node,
-      value: nowDate.getTime() <= nodeDate.getTime()
     })
   }
 }
