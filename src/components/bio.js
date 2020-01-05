@@ -9,7 +9,7 @@ import React from "react"
 import { useStaticQuery, graphql } from "gatsby"
 import Image from "gatsby-image"
 
-import { rhythm } from "../utils/typography"
+import { rhythm, scale } from "../utils/typography"
 
 const Bio = () => {
   const data = useStaticQuery(graphql`
@@ -55,6 +55,17 @@ const Bio = () => {
       />
       <p>
         Written by <strong>{author}</strong>, all opinions are my own.
+        <br/>
+        <a
+          style={{
+            ...scale(-1 / 5),
+            display: `block`,
+            marginBottom: rhythm(1),
+          }}
+          href="https://twitter.com/tukaelu"
+        >
+          Twitter
+        </a>
       </p>
     </div>
   )
