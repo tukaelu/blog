@@ -39,7 +39,7 @@ class Layout extends React.Component {
         <header>{header}</header>
         <main>{children}</main>
         <footer>
-          © <a href="https://twitter.com/tukaelu">tuka</a> {new Date().getFullYear()}
+          © {new Date().getFullYear()} <Link to={`/`}>tuka</Link>
         </footer>
       </div>
     )
