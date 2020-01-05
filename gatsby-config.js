@@ -190,11 +190,9 @@ module.exports = {
         resolveEnv: () => NETLIFY_ENV,
         env: {
           production: {
-            // TODO Uncomment when publishing
-            // policy: [{ userAgent: '*' }]
-            policy: [{ userAgent: '*', disallow: ['/'] }],
-            sitemap: null,
-            host: null
+            policy: [{ userAgent: '*', allow: '/' }],
+            sitemap: "https://tuka.io/sitemap.xml",
+            host: "https://tuka.io"
           },
           'branch-deploy': {
             policy: [{ userAgent: '*', disallow: ['/'] }],
