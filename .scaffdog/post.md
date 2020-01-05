@@ -16,7 +16,7 @@ date: '{{ 'new Date().toISOString()' | eval }}'
 path: /posts/{{ input | kebab }}/
 description: ''
 tags:
-  - diary
+  - note
 ---
 
 ```
