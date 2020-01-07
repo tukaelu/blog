@@ -54,4 +54,4 @@ Windowsイベントをログに記録する
 | -Category | N | 記録するイベントのタスクのカテゴリーを指定 |
 | -ComputerName | N | イベントを記録するコンピュータ名を指定 |
 
-[Mackerel](https://mackerel.io/) の [check-windows-eventlog](https://github.com/mackerelio/go-check-plugins/tree/master/check-windows-eventlog) プラグインの設定確認をする際に覚えておくと非常に便利！！
+[Mackerel](https://mackerel.io/) の [check-windows-eventlog](https://github.com/mackerelio/go-check-plugins/tree/master/check-windows-eventlog) プラグインの設定確認をする際に覚えておくと非常に便利！
