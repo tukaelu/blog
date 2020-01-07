@@ -8,7 +8,7 @@ tags:
   - 備忘録
 ---
 
-例えば以下の様な条件のイベントログを発生したいとします。
+例えば以下の様な条件のイベントログを発生させたいとします。
 
 - イベントの種類は`Application`
 - イベントソースは`HogeSystem`
@@ -17,19 +17,19 @@ tags:
 
 その場合、PowerShellのコマンドレットで以下のような手順を踏む。
 
-- イベントビューアにイベントソースを作成
-- イベントソースに対してイベントログを書き込む
+- イベントビューアにイベントソースを作成（New-EventLog）
+- イベントソースに対してイベントログを書き込む（Write-EventLog）
 
 実際のコマンドは以下のような感じ。
 
-```powershell
+```powershell:title=PowerShell
 New-EventLog -LogName Application -Source "HogeSystem"
 Write-EventLog -LogName Application -Source "HogeSystem" -EntryType Error -EventID 100 -Message "This is a test event of HogeSystem (ErrCode=100)"
 ```
 
 ## New-EventLogコマンドレット
 
-- イベントビューアに新しいイベントログを作成する
+イベントビューアに新しいイベントログを作成する
 
 | Option | Require | Description |
 | ------ | ------- | ------------|
@@ -40,7 +40,7 @@ Write-EventLog -LogName Application -Source "HogeSystem" -EntryType Error -Event
 
 ## Write-EventLogコマンドレット
 
-- Windowsイベントをログに記録する
+Windowsイベントをログに記録する
 
 | Option | Require | Description |
 | ------ | ------- | ------------|
@@ -51,3 +51,5 @@ Write-EventLog -LogName Application -Source "HogeSystem" -EntryType Error -Event
 | -EntryType | N | 記録するイベントのレベルを指定 |
 | -Category | N | 記録するイベントのタスクのカテゴリーを指定 |
 | -ComputerName | N | イベントを記録するコンピュータ名を指定 |
+
+[Mackerel](https://mackerel.io/) の [check-windows-eventlog](https://github.com/mackerelio/go-check-plugins/tree/master/check-windows-eventlog) プラグインの設定確認をする際に覚えておくと非常に便利！！
