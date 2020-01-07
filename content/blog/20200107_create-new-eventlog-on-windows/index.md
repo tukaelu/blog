@@ -27,6 +27,8 @@ New-EventLog -LogName Application -Source "HogeSystem"
 Write-EventLog -LogName Application -Source "HogeSystem" -EntryType Error -EventID 100 -Message "This is a test event of HogeSystem (ErrCode=100)"
 ```
 
+以下、コマンドレットのちょいメモ。
+
 ## New-EventLogコマンドレット
 
 イベントビューアに新しいイベントログを作成する
