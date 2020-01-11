@@ -1,5 +1,5 @@
 import Typography from "typography"
-import TypographyTheme from "typography-theme-wordpress-2016"
+import TypographyTheme from "typography-theme-github"
 
 TypographyTheme.overrideThemeStyles = () => {
   return {
