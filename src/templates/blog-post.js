@@ -7,12 +7,14 @@ import SEO from "../components/seo"
 import { rhythm, scale } from "../utils/typography"
 
 import Iframely from '../components/iframely'
+import SocialButtons from "../components/social-buttons"
 
 class BlogPostTemplate extends React.Component {
   render() {
     const post = this.props.data.markdownRemark
     const siteTitle = this.props.data.site.siteMetadata.title
     const { previous, next } = this.props.pageContext
+    const path = this.props.path
 
     return (
       <Layout location={this.props.location} title={siteTitle}>
@@ -42,6 +44,11 @@ class BlogPostTemplate extends React.Component {
             </p>
           </header>
           <section dangerouslySetInnerHTML={{ __html: post.html }} />
+          <br/>
+          <SocialButtons
+            title={post.frontmatter.title}
+            slug={path}
+          />
           <hr
             style={{
               marginBottom: rhythm(1),
