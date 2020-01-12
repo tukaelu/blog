@@ -45,12 +45,16 @@ TypographyTheme.overrideThemeStyles = () => {
 }
 
 const textFontFamily = [
-  'Avenir Next',
-  'Helvetica Neue',
-  'Segoe UI',
-  'Helvetica',
-  'Arial',
-  'sans-serif',
+  "-apple-system",
+  "BlinkMacSystemFont",
+  "Helvetica Neue",
+  "游ゴシック体",
+  "Yugothic",
+  "游ゴシック",
+  "Yu Gothic",
+  "Verdana",
+  "メイリオ",
+  "sans-serif",
 ]
 const codeFontFamily = [
   'Menlo',
