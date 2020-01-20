@@ -33,6 +33,7 @@ function SEO({ description, lang, meta, title }) {
     `
   )
 
+  const metaSiteUrl = site.siteMetadata.siteUrl
   const metaDescription = description || site.siteMetadata.description
   const metaImage = site.siteMetadata.siteUrl + profile.edges[0].node.publicURL
 
@@ -44,6 +45,10 @@ function SEO({ description, lang, meta, title }) {
       title={title}
       titleTemplate={`%s | ${site.siteMetadata.title}`}
       meta={[
+        {
+          name: `og:url`,
+          content: metaSiteUrl,
+        },
         {
           name: `description`,
           content: metaDescription,
