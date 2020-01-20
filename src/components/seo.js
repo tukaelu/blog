@@ -11,15 +11,22 @@ import Helmet from "react-helmet"
 import { useStaticQuery, graphql } from "gatsby"
 
 function SEO({ description, lang, meta, title }) {
-  const { site } = useStaticQuery(
+  const { site, profile } = useStaticQuery(
     graphql`
       query {
+        profile: allFile(filter: {relativePath: {regex: "/tuka.png/"}}) {
+          edges {
+            node {
+              publicURL
+            }
+          }
+        }
         site {
           siteMetadata {
             title
             description
             author
-            image
+            siteUrl
           }
         }
       }
@@ -27,7 +34,7 @@ function SEO({ description, lang, meta, title }) {
   )
 
   const metaDescription = description || site.siteMetadata.description
-  const metaImage = site.siteMetadata.image
+  const metaImage = site.siteMetadata.siteUrl + profile.edges[0].node.publicURL
 
   return (
     <Helmet

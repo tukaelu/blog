@@ -17,7 +17,6 @@ config.siteMetadata = {
   author: `tuka`,
   description: `opinions are my own.`,
   siteUrl: `https://tuka.io/`,
-  image: `/static/tuka.png`,
   social: {
     twitter: `tukaelu`,
     github: `tukaelu`,
