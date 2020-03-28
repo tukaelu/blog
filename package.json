@@ -41,7 +41,7 @@
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-helmet": "5.2.1",
-    "react-share": "4.0.1",
+    "react-share": "4.1.0",
     "react-typography": "0.16.19",
     "textlint": "11.6.3",
     "textlint-rule-ja-hiragana-fukushi": "1.2.0",
