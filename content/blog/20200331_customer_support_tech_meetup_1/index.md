@@ -8,17 +8,17 @@ tags:
   - 参加レポート
 ---
 
-少し日が空いてしまいましたが先日、オンライン開催された Customer Support Tech Meetup #1 に参加しました。
+だいぶ日が空いてしまいましたが先日オンライン開催された Customer Support Tech Meetup に参加しました。
 
 <div class="iframely-embed"><div class="iframely-responsive" style="height: 140px; padding-bottom: 0;"><a href="https://mixi.connpass.com/event/167390/" data-iframely-url="//cdn.iframe.ly/tXHzhbI?iframe=card-small"></a></div></div>
 
 <br>
 
-僕が仕事で [Mackerel](https://mackerel.io/ja/) というサービスのテクニカルサポートに携わっていて、各社のCS業務について気になっていたところなので今回のイベントは大変ありがたかったです :pray:
+僕が仕事で [Mackerel](https://mackerel.io/ja/) というサービスのテクニカルサポートに携わっていて、各社のCS業務について気になっていたところなので今回のイベントはとても嬉しかったです :pray:
 
 <br>
 
-この日はWFHだったので就業後に途中まででしたが聴講させていただきました！
+この日はWFHの後に予定があったので途中まででしたが聴講させていただきました！
 
 <br>
 
@@ -30,24 +30,17 @@ tags:
 
 管理ツールは恐らくどんなサービスやシステムにもあるはず…！
 
-そんな管理ツールをミクシィのCREの方々はサポート業務にあたるCS担当者、そしてその先にいるユーザーのために日々開発・改善に取り組まれているというお話でした。
+そんな管理ツールをミクシィのCREの方々はサポート業務にあたるCS担当者、そしてその先にいるユーザーのために日々改善に取り組まれているというお話でした。
 
-速く正確なCS対応を行うには必要な情報に素早くアクセスできることが必須、これが実現できないと調査などの確認コストが発生し、結果として速く正確な対応ができないと仰っていてとても納得。。
+速く正確なCS対応するには必要な情報に素早くアクセスできることが必須、これが実現できないと調査や確認などの作業コストが発生し、結果として速く正確な対応ができないと仰っていて納得。
 
-このあたりは問い合わせフォームにも同じことが言えると思っていて、必要な情報を1stタッチで引き出せるかみたいなところは永遠の課題…。
+ユーザーのプレイスタイルを想像しながら行うことを心がけているらしく、`ユーザーに寄り添ったサポート`を行うためにCREが`ユーザーを知るための管理ツール`を開発、またそれらの業務を効率化されているようだった。
 
-
-モンストのCS担当の方はユーザーのプレイスタイルを想像しながら行うことを心がけているらしく、`ユーザーに寄り添ったサポート`を行うためにCREが`ユーザーを知るための管理ツール`を開発、またそれらの業務を効率化されているようだった。
-
-
-
-
-
-個人的に面白かったのが、CSの方がゲームの攻略をサポートするような働きをされる点。これはゲーム業界だからこそのサポートなのかも。
+<blockquote class="twitter-tweet" data-dnt="true" align="center"><p lang="ja" dir="ltr">「ユーザーのプレイスタイルを想像しながら対応を考えている」<br>つよい…！ <a href="https://twitter.com/hashtag/mixiCSTechMeetup?src=hash&amp;ref_src=twsrc%5Etfw">#mixiCSTechMeetup</a></p>&mdash; tuka / 疲パト… (@tukaelu) <a href="https://twitter.com/tukaelu/status/1242757948192915456?ref_src=twsrc%5Etfw">March 25, 2020</a></blockquote>
 
 <br>
 
-Mackerelは`サーバー監視サービス`なので、監視対象となるシステムのアーキテクチャなどミクシィさんのように見ることはできないので、サポートするにはヒアリングがとても大事だったりするんだけど、`ユーザーを知るための管理ツール`という点で何か出来ることがないか考えられそうかなーと刺激をいただきました :pray:
+このあたりは問い合わせフォームにも同じことが言えるのかなと思っていて、必要な情報を1stタッチでストレスなく引き出せるかみたいなところは永遠の課題…。
 
 <br>
 
@@ -57,12 +50,7 @@ Mackerelは`サーバー監視サービス`なので、監視対象となるシ�
 
 <br>
 
-二人目は、ミクシィ本間光宣(@mitsu9)さん。
-
-- 新卒入社でCREをされている
-- 機械学習でCS業務を業務を効率化
-
-CSの問い合わせ対応によくある`テンプレ対応`を効率化するために、機械学習によるテンプレート推薦を行うシステムの開発を本間さんが担当されているとのこと。
+CSの問い合わせ対応によくある`テンプレ対応`を効率化するために、AIによるテンプレート推薦するシステムの開発を登壇者の本間さんが担当されているとのことでした。
 
 <br>
 
@@ -72,15 +60,20 @@ CSの問い合わせ対応によくある`テンプレ対応`を効率化する�
 
 なるほどー。
 
-toB/toCやサービスの違いはあれど、テンプレ対応することはよくあるし、過去の事例を参考にして返信することもサポートをしているとよくありますね。
+サポートをしているとテンプレ対応することはよくあるし、過去の事例を参考にして返信することもよくありますね。
 
-我々は最近Zendeskを使い始めたこともあって、まだ`温かみのある対応`をしているけどゆくゆくは
+規模が大きくなったらテンプレート推薦みたいなものも考えてみたい。
 
-- 人が分類できるか
-- 機械が分類できるか
-- 機械学習を使う必要があるか
+<blockquote class="twitter-tweet" data-dnt="true" align="center"><p lang="ja" dir="ltr">・効率化対象に向いている問い合わせの例<br>　・サービスのコア機能<br>　・FAQを読んでも自己解決が難しいもの<br><br>・効率化対象に向いていない問い合わせの例<br>　・一時的なキャンペーン関連<br>　・FAQやサービスの改善によって解決するもの<br><br> <a href="https://twitter.com/hashtag/mixiCSTechMeetup?src=hash&amp;ref_src=twsrc%5Etfw">#mixiCSTechMeetup</a></p>&mdash; ゆうのかんや@セキュリティエンジニア(よわよわ) (@yunokanya) <a href="https://twitter.com/yunokanya/status/1242765501199052801?ref_src=twsrc%5Etfw">March 25, 2020</a></blockquote>
+
+<blockquote class="twitter-tweet" data-dnt="true" align="center"><p lang="ja" dir="ltr">この前のスライド（撮り忘れた）からの流れで、回答が明確かつコア（仕様が変わらない）ものだとAIで作成可能。ここら辺の考え方はAIに限らず、テンプレ化やボット、アウトソースする部分についても共通ですね。<br><br> <a href="https://twitter.com/hashtag/mixiCSTechMeetup?src=hash&amp;ref_src=twsrc%5Etfw">#mixiCSTechMeetup</a> <a href="https://t.co/4BLjqnIQff">pic.twitter.com/4BLjqnIQff</a></p>&mdash; CS HACK@中の人 (@cshackJP) <a href="https://twitter.com/cshackJP/status/1242766682998759424?ref_src=twsrc%5Etfw">March 25, 2020</a></blockquote>
+
+<br>
 
 ブログも公開されていましたね :smile:
 
 <iframe src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fmitsu9.hatenablog.com%2Fentry%2Fcustomer_support_tech_meetup_1" style="border: 0; width: 100%; height: 190px;" allowfullscreen scrolling="no"></iframe>
 
+<br>
+
+残り2つの登壇があったのですがタイムアップで聴けなかったのが残念。
