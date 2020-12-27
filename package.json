@@ -50,8 +50,8 @@
     "textlint-rule-no-mixed-zenkaku-and-hankaku-alphabet": "1.0.1",
     "textlint-rule-preset-ja-technical-writing": "4.0.1",
     "textlint-rule-preset-japanese": "5.0.0",
-    "typeface-merriweather": "0.0.72",
-    "typeface-montserrat": "0.0.75",
+    "typeface-merriweather": "1.1.13",
+    "typeface-montserrat": "1.1.13",
     "typography": "0.16.19",
     "typography-theme-github": "0.16.19",
     "typography-theme-wordpress-2016": "0.16.19"
