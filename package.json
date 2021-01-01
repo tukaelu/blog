@@ -44,7 +44,7 @@
     "react-share": "4.2.1",
     "react-typography": "0.16.19",
     "textlint": "11.7.7",
-    "textlint-rule-ja-hiragana-fukushi": "1.2.0",
+    "textlint-rule-ja-hiragana-fukushi": "1.3.0",
     "textlint-rule-ja-no-abusage": "2.0.1",
     "textlint-rule-ja-no-redundant-expression": "3.0.2",
     "textlint-rule-no-mixed-zenkaku-and-hankaku-alphabet": "1.0.1",
