@@ -1,0 +1,51 @@
+---
+import { formatDate } from '@lib/date'
+
+interface Props {
+  title: string
+  slug: string
+  publishedAt: Date
+  tags: string[]
+  icon?: string
+  lang?: 'ja' | 'en'
+}
+
+const { title, slug, publishedAt, tags, icon, lang = 'ja' } = Astro.props
+const postUrl = lang === 'en' ? `/en/posts/${slug}` : `/posts/${slug}`
+const formattedDate = formatDate(publishedAt, lang)
+---
+
+<header class="flex flex-col items-center">
+  {
+    icon && (
+      <div class="flex justify-center">
+        <img src={icon} alt="" role="presentation" class="h-20 w-20" />
+      </div>
+    )
+  }
+  <time
+    datetime={publishedAt.toISOString()}
+    class="text-lg sm:text-xl dark:text-white mt-2"
+  >
+    {formattedDate}
+  </time>
+  <h1
+    class="text-2xl font-bold tracking-tight sm:text-3xl mt-2 sm:mt-4 text-center"
+  >
+    <a href={postUrl} class="dark:text-white">
+      {title}
+    </a>
+  </h1>
+
+  {
+    tags.length > 0 && (
+      <div class="flex flex-wrap gap-2 mt-3 justify-center">
+        {tags.map(tag => (
+          <span class="text-xs px-2 py-1 rounded-full bg-odwr-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300">
+            #{tag}
+          </span>
+        ))}
+      </div>
+    )
+  }
+</header>

@@ -1,0 +1,135 @@
+---
+title: 'Syncing Author Date and Committer Date in Git'
+slug: sync-author-date-and-committer-date-in-git
+description: 'When you run git log, there are two dates shown: Author Date and Committer Date. This post explains the difference between the two and how to sync them.'
+tags:
+  - tech
+publishedAt: '2024/06/10 19:30:00.000+09:00'
+createdAt: '2024/06/10 19:30:00.000+09:00'
+updatedAt: '2024/06/10 19:30:00.000+09:00'
+icon: 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/First%20quarter%20moon/Flat/first_quarter_moon_flat.svg'
+---
+
+Not long ago, I was chatting with an acquaintance about Git when they said, "When I make a small fix after committing using `git commit --amend`, the date shown by `git log` doesn't seem to change." That led us into a discussion about Author and Committer.
+
+## TL;DR
+
+- Git has two concepts: Author and Committer, each with their own recorded timestamp.
+- Running `git log --pretty=fuller` shows both `Author Date` and `Committer Date`.
+- `Author Date` can be changed using `--amend`, while `Committer Date` can be synced using `rebase` with a specific option.
+- That said, rewriting dates should only be done in a way that doesn't affect other contributors to the repository.
+
+## Does the Date Change When You Amend a Commit?
+
+When you use `commit --amend` to include additional changes in a commit (i.e., to modify the commit itself), let's take a look at the dates in the log before and after:
+
+```sh
+$ git log
+commit 1b0f146212cecb3a9fa090eb85d71a662315176c (HEAD -> main)
+Author: Hoge Fuga <hoge@example.com>
+Date:   Mon Jun 10 18:50:32 2024 +0900
+
+    initial commit
+
+$ git commit --amend
+
+$ git log
+commit bb2e1ea5af18504baac4de3565d0b839651a080f (HEAD -> main)
+Author: Hoge Fuga <hoge@example.com>
+Date:   Mon Jun 10 18:50:32 2024 +0900
+
+    initial commit
+```
+
+Both before and after show `Mon Jun 10 18:50:32 2024 +0900` — the date hasn't changed.
+
+The reason is that what's displayed here is the timestamp recorded by the `Author`.
+
+## What Are Author and Committer?
+
+In Pro Git's "[2.3 Viewing the Commit History](https://git-scm.com/book/en/v2/Git-Basics-Viewing-the-Commit-History)", the Author is described as the person who originally did the work, while the Committer is the person who last applied that work:
+
+> You may be wondering what the difference is between author and committer. The author is the person who originally wrote the work, whereas the committer is the person who last applied the work. So, if you send in a patch to a project and one of the core members applies the patch, both of you get credit — you as the author, and the core member as the committer.
+
+The detailed distinction between Author and Committer is covered in "[5.1 Distributed Workflows](https://git-scm.com/book/en/v2/Distributed-Git-Distributed-Workflows)", but in a local repository, the person doing the work and the person applying it are typically the same. So right after committing, the Author date and Committer date will be identical.
+
+Let's look at the commit log with the `--pretty=fuller` option:
+
+```sh
+commit bb2e1ea5af18504baac4de3565d0b839651a080f (HEAD -> main)
+Author:     Hoge Fuga <hoge@example.com>
+AuthorDate: Mon Jun 10 18:50:32 2024 +0900
+Commit:     Hoge Fuga <hoge@example.com>
+CommitDate: Mon Jun 10 18:55:16 2024 +0900
+
+    initial commit
+```
+
+The `Date` field under `Author` has changed to `AuthorDate`, and `Commit` and `CommitDate` have been added below it.
+`AuthorDate` shows `Mon Jun 10 18:50:32 2024 +0900`, while `CommitDate` shows `Mon Jun 10 18:55:16 2024 +0900` — there's a time difference. This difference corresponds to the time when `commit --amend` was run.
+
+To summarize briefly:
+
+- `AuthorDate` is typically recorded as the date and time the commit was originally created.
+- `CommitDate` is initially the same as `AuthorDate`.
+- However, `CommitDate` is updated with the timestamp of the operation (e.g., `commit --amend` or `rebase`) applied by the Committer.
+
+## Rewriting Each Date
+
+For example, if you've frequently used `commit --amend` locally and ended up with `AuthorDate ≠ CommitDate`, you might want to bring them back in sync so that `AuthorDate = CommitDate`.
+
+In that case, you can use the `--committer-date-is-author-date` option with `rebase` to set CommitDate to match AuthorDate:
+
+```sh
+$ git rebase <branch> --committer-date-is-author-date
+```
+
+Since we're operating on the initial commit here, we use the `--root` option with rebase:
+
+```sh
+$ git rebase --root --committer-date-is-author-date
+$ git log --pretty=fuller
+commit 849cfd5be35d65fc93925eb9b584c6abbfebb0d6 (HEAD -> main)
+Author:     Hoge Fuga <hoge@example.com>
+AuthorDate: Mon Jun 10 18:50:32 2024 +0900
+Commit:     Hoge Fuga <hoge@example.com>
+CommitDate: Mon Jun 10 18:50:32 2024 +0900
+
+    initial commit
+```
+
+AuthorDate and CommitDate are now both `Mon Jun 10 18:50:32 2024 +0900` — synced!
+
+The example above synced CommitDate to AuthorDate. If you want to do the opposite — sync AuthorDate to CommitDate — use the following:
+
+```sh
+$ git rebase <branch> --ignore-date
+```
+
+You can also rewrite AuthorDate using `commit --amend --date="<datetime>"`:
+
+```sh
+$ git log
+commit 1b0f146212cecb3a9fa090eb85d71a662315176c (HEAD -> main)
+Author: Hoge Fuga <hoge@example.com>
+Date:   Mon Jun 10 18:50:32 2024 +0900
+
+    initial commit
+
+$ git commit --amend --date="Mon Jun 10 18:30:32 2024 +0900"
+
+$ git log
+commit 1b0f146212cecb3a9fa090eb85d71a662315176c (HEAD -> main)
+AuthorDate: Hoge Fuga <hoge@example.com>
+Date:   Mon Jun 10 18:30:32 2024 +0900
+Commit:     Hoge Fuga <hoge@example.com>
+CommitDate: Mon Jun 10 19:27:15 2024 +0900
+
+    initial commit
+```
+
+In this case, CommitDate will of course be updated as well, so use `--committer-date-is-author-date` if needed to sync them back up.
+
+### Wrapping Up
+
+Rewriting dates isn't something you'd do very often, but there are situations where you might need to sync them for one reason or another. When that time comes, knowing the concepts of Author and Committer will come in handy!

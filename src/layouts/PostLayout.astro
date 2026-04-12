@@ -1,0 +1,47 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro'
+import PostHeader from '@components/post/PostHeader.astro'
+import RelatedPosts from '@components/post/RelatedPosts.astro'
+import { SITE_TITLE } from '@lib/constants'
+import type { Post, EnPost } from '@lib/posts'
+
+interface Props {
+  post: Post | EnPost
+  lang?: 'ja' | 'en'
+}
+
+const { post, lang = 'ja' } = Astro.props
+const { title, slug, description, publishedAt, tags, icon } = post.data
+const pageTitle = `${title} | ${SITE_TITLE}`
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={description}
+  slug={slug}
+  isArticle={true}
+  lang={lang}
+>
+  <div class="max-w-full">
+    <article data-pagefind-body>
+      <PostHeader
+        title={title}
+        slug={slug}
+        publishedAt={publishedAt}
+        tags={tags}
+        icon={icon}
+        lang={lang}
+      />
+
+      <div class="max-w-full mt-8 prose dark:prose-invert dark:text-zinc-300">
+        <slot />
+      </div>
+
+      <div class="mt-6">
+        <div class="hatena-star" />
+      </div>
+    </article>
+  </div>
+
+  {lang === 'ja' && <RelatedPosts post={post as Post} />}
+</BaseLayout>

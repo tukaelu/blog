@@ -1,0 +1,17 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro'
+import PostCard from '@components/post/PostCard.astro'
+import { getListablePosts } from '@lib/posts'
+import { SITE_TITLE } from '@lib/constants'
+
+const posts = await getListablePosts('en')
+const description = 'Sharing information that probably benefits no one.'
+---
+
+<BaseLayout title={SITE_TITLE} description={description} lang="en">
+  <div class="flex flex-col gap-8">
+    {posts.map(post => (
+      <PostCard post={post} lang="en" />
+    ))}
+  </div>
+</BaseLayout>

@@ -1,0 +1,27 @@
+/* UnoCSS reset is injected via @unocss/astro injectReset option */
+
+/* Footnotes */
+.footnotes {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+}
+
+.dark .footnotes {
+  border-top-color: #374151;
+}
+
+.footnotes ol {
+  margin-top: 0.5rem;
+}
+
+.footnotes ol li {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.footnotes ol li p {
+  margin-top: 0.25rem !important;
+  margin-bottom: 0.25rem !important;
+}

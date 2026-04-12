@@ -1,0 +1,102 @@
+---
+title: "Building 'zgsync': A Tool to Manage Zendesk Guide Articles in Markdown"
+slug: 'zgsync-sync-markdown-to-zendesk-guide'
+description: "I built 'zgsync', a CLI tool for efficiently managing Zendesk Guide articles using Markdown."
+tags:
+  - tech
+  - zendesk
+  - zgsync
+publishedAt: '2025-03-12T09:29:33.697+09:00'
+createdAt: '2025-03-05T06:55:14.866+09:00'
+updatedAt: '2025-03-12T09:29:33.697+09:00'
+icon: 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/master/assets/Seal/Flat/seal_flat.svg'
+draft: false
+---
+
+import EmbeddedLink from '@components/mdx/EmbeddedLink.astro'
+
+I use Zendesk Guide at work, and to solve some pain points I'd been feeling for a while, I built "zgsync" — a supplementary CLI tool for efficiently managing Zendesk Guide articles in Markdown.
+
+## Challenges with Managing Zendesk Guide
+
+When I talk with people who use Zendesk for work, I often hear about minor frustrations. I've personally been working in technical support for SaaS products for about five years, using Zendesk on a daily basis, and I've particularly felt friction with the article authoring and review process in Zendesk Guide.
+
+### The Article Lifecycle Problem
+
+Articles published on Zendesk Guide tend to remain live until the corresponding feature is retired. Since articles are often linked from within the application or from other pages and sites, and to prevent broken links, we generally have to keep updating articles once they're created.
+
+And while not ideal, the review process often looked something like this:
+
+> - For new articles: review in draft state.
+> - For large edits: create an unpublished page, copy the original content there, make changes, and review.
+> - For small edits: share the changes in Slack and review in the thread.
+
+Reviews typically happened in Slack and would gradually get buried over time. For edits, once changes were reflected on the live page, the temporary unpublished copy became unnecessary and was deleted (or archived). This kind of workflow just kind of persisted indefinitely.
+
+### Problems with Editing Directly in Zendesk Guide
+
+Zendesk Guide's editor is intuitive to use, but it's hard to call it ergonomic. In practice, we'd often draft content in VS Code or another local editor, then copy and paste it in. At that point, unintended styles from the source would sometimes bleed through, causing parts of the page to have different fonts, font sizes, or text colors — breaking visual consistency.[^1]
+
+[^1]: You can clear unwanted styles by viewing the source and removing them, but people tend to forget...
+
+Also, not obvious from the outside but easy to run into over time: repeated editing can cause the internal HTML that Zendesk Guide maintains to become heavily nested with extraneous tags and fall apart. Version history management isn't great either...
+
+### There's an Official Review Flow, But It's Expensive
+
+Zendesk Guide does offer something called "Team Publishing"[^2], a built-in content review mechanism. I haven't used it personally, but Team Publishing apparently lets you set up review workflows for articles in "draft" or "published" states — like this:
+
+![Team Publishing Workflow (from Zendesk Help)](https://zen-marketing-documentation.s3.amazonaws.com/docs/en/guide_tp_workflow_enterprise.png)
+
+[^2]: [About team publishing in Guide – Zendesk Help](https://support.zendesk.com/hc/en-us/articles/4408832609562)
+
+However, it's an Enterprise plan feature[^3], so it's not available on lower tiers like Professional. For small-to-mid-sized teams, the cost of upgrading just for a review workflow is a significant barrier.
+
+[^3]: Requires Zendesk Suite or Guide on an Enterprise plan or higher.
+
+I can also imagine that if we ever wanted to integrate AI-assisted proofreading or writing assistance down the road, Team Publishing (and Zendesk in general) might pose extensibility challenges.
+
+## So I Built This
+
+To address the challenges above, I built "zgsync" — a CLI tool that syncs Markdown articles with Zendesk Guide.
+
+<EmbeddedLink url="https://github.com/tukaelu/zgsync" />
+
+Zendesk Guide has data models called Article and Translation, and zgsync lets you manage both using Markdown files.
+
+As of this article's publication, the subcommands supported by zgsync are:
+
+- `empty`: Creates an empty draft article/translation in Zendesk Guide and saves a corresponding Markdown file locally.
+- `push`: Converts Markdown to HTML and updates the article/translation in Zendesk Guide.
+- `pull`: Converts articles/translations from Zendesk Guide to Markdown and saves them as local files.
+
+With zgsync, you can integrate <u>**Git/GitHub-based version history, code review, and CI-powered proofreading**</u> into your Zendesk Guide workflow.
+
+Also, since conversion from Markdown produces clean, simple HTML[^4], content will be rendered according to the help center's theme without unintended styles or deeply nested tags.
+
+[^4]: When converting from HTML to Markdown, anything that can't be expressed in Markdown is stripped away.
+
+For detailed usage and caveats, check out the repository's README — give it a try if you're interested![^5]
+
+[^5]: It's a solo project built somewhat hastily, so contributions and feedback would be hugely motivating!
+
+I plan to write about actual usage patterns in a separate post (probably).
+
+## Side Note
+
+<blockquote class="twitter-tweet">
+  <p lang="ja" dir="ltr">
+    最高便利に使ってます
+  </p>
+  &mdash; kmuto (@kmuto){' '}
+  <a href="https://twitter.com/kmuto/status/1887359186583146853?ref_src=twsrc%5Etfw">
+    February 6, 2025
+  </a>
+</blockquote>
+<script
+  async
+  src="https://platform.twitter.com/widgets.js"
+  charset="utf-8"
+></script>
+
+About six months passed from when I finished the tool to writing this post, and over a month went by just thinking "I should write about this"... 😇  
+And someone is actually using it — incredibly grateful 🙌

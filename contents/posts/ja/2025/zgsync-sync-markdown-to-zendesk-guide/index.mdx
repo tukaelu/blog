@@ -1,0 +1,108 @@
+---
+title: 'Zendesk Guideの記事をMarkdownで管理するツール「zgsync」を作った'
+slug: 'zgsync-sync-markdown-to-zendesk-guide'
+description: 'Zendesk Guideの記事をMarkdownで管理するツール「zgsync」を作りました。'
+tags:
+  - tech
+  - zendesk
+  - zgsync
+publishedAt: '2025-03-12T09:29:33.697+09:00'
+createdAt: '2025-03-05T06:55:14.866+09:00'
+updatedAt: '2025-03-12T09:29:33.697+09:00'
+icon: 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/master/assets/Seal/Flat/seal_flat.svg'
+draft: false
+---
+
+import EmbeddedLink from '@components/mdx/EmbeddedLink.astro'
+
+仕事でZendesk Guideを利用しているのですが、日々感じていた課題を解決するため、Zendesk Guideの記事をMarkdownで効率的に管理するための補助ツール「zgsync」を作りました。
+
+## Zendesk Guide運用における課題
+
+Zendeskを業務で利用している方とお話をすると、Zendeskに対するちょっとした不満点をよく聞くことがあります。
+自分もここ5年ほどSaaSのテクニカルサポートなどを担当していて、Zendeskを日常的に使用しているのですが、特にZendesk Guideにおける記事の執筆とレビュープロセスに課題を感じていました。
+
+### 記事のライフサイクルの問題
+
+Zendesk Guideで公開するページのライフサイクルは、その機能がクローズになるまで公開され続けることが多いのではないかと思います。
+アプリケーション内にヘルプページへのリンクが貼られていたり、他のページやサイトからリンクされることもあるので、リンク切れを防ぐ意図などから、基本的には一度作成した記事を更新し続ける必要がありました。
+
+そして決していい方法とは言えないですが、次のような方法でレビューすることが多かったです。
+
+> - 新規に記事を作成する場合、下書きの状態でレビューをする。
+> - 修正量が多い場合は、非公開ページを作成し、そこに原本のコピーをして修正を加えてレビューをする。
+> - 修正量が少ない場合は、Slackで部分的な修正内容を共有して、そのスレッドでレビューする。
+
+レビューのやりとりはSlack上で行われることが多く、時間経過とともに流れていきます。
+また修正の場合は公開ページに修正内容が反映されると、一時的に作成した非公開ページは不要になるので削除（もしくはアーカイブ）していました。  
+そしてこのような運用がなんとなく続いていました。
+
+### Zendesk Guideのエディターで修正する問題点
+
+Zendesk Guideのエディターは直感的に操作できるのですが、お世辞にも使い勝手がいいものとは言えず、結局は手元のVSCodeなどのエディターで下書きした内容をコピペしていました。
+このとき意図せずコピー元のスタイルが反映されてしまい、ページの一部分だけフォントや文字サイズ、文字色などが異なり、全体的な統一感を失っていたなんてことがしばしば見受けられます。[^1]
+
+[^1]: ソースコードを表示して、スタイルを削除すれば余計なスタイルは一掃できますが忘れられがち…。
+
+また表向きは違和感がなく気づきにくいのですが、編集を繰り返すうちにZendesk Guideの内部で保持しているHTMLが余計なタグでネストされ、崩壊していることもよくあります。ついでに履歴管理もイマイチですね…。
+
+### オフィシャルなレビューフローの仕組みはあるがお高い…
+
+Zendesk Guideでは「チームパブリッシング[^2]」というコンテンツレビューの仕組みが提供されているようでした。  
+私は利用したことがないのですが、チームパブリッシングは以下のイメージのように「下書き中」「公開中」のステータスの記事において、レビューフローを組むことができるそうです。
+
+![チームパブリッシングによるワークフロー（Zendeskヘルプより引用）](https://zen-marketing-documentation.s3.amazonaws.com/docs/en/guide_tp_workflow_enterprise.png)
+
+[^2]: [Guideのチームパブリッシングの概要 – Zendeskヘルプ](https://support.zendesk.com/hc/ja/articles/4408832609562)
+
+しかし、Enterpriseプラン[^3]から提供される機能なので、Professionalプランなどの下位のプランでは利用できません。中小規模の場合は、レビューフローのためだけに上位プランを契約するのはハードル（=お値段）がかなり高いです。
+
+[^3]: Zendesk SuiteもしくはGuideのEnterpriseプラン以上が必要なようです。
+
+また、将来的にAIを利用した文章校正や入力補助などを行う仕組みを導入したいとなったとき、チームパブリッシング（というかZendeskそのもの）では拡張性がハードルになりそうなことも想像できます。
+
+## そんなワケで作りました
+
+前述の課題を解決すべく、Markdownで書いた記事をZendesk Guideと連携するCLIツール「zgsync」を作りました。
+
+<EmbeddedLink url="https://github.com/tukaelu/zgsync" />
+
+Zendesk Guideには、Article（記事）とTranslation（翻訳）というデータモデルがあり、その2つをMarkdownファイルで管理できます。
+
+この記事の公開時点で、zgsyncが対応している操作（サブコマンド）は次のとおりです。
+
+- `empty`: Zendesk Guideに空の下書き記事・翻訳を作成して、対応するMarkdownファイルを保存する
+- `push`: MarkdownをHTMLに変換して、Zendesk Guideの記事・翻訳を更新する
+- `pull`: Zendesk Guideから記事・翻訳をMarkdownに変換して、ファイルで保存する
+
+zgsyncを用いるとZendesk Guideの運用に、<u> **Git/GitHubによる履歴管理やレビュー、CIによる文章校正などを組み込むことができます** </u>。
+
+また、MarkdownからはシンプルなHTMLに変換される[^4]ので、意図しないスタイルやタグのネストを含まず、ヘルプセンターのテーマに沿ってコンテンツが表示されるはずです！
+
+[^4]: HTMLからMarkdownに変換する際も、Markdownで表現できないものはごっそりと削ぎ落とされます。
+
+リポジトリのREADMEに詳しい使用方法や注意点を記載しているので、興味があればぜひ試してみてください！[^5]
+
+[^5]: ひとりで雑に作っているので、コントリビュートやフィードバックなどをいただけると励みになります！
+
+実際の運用などについては、また別の記事で書きたいと思います（たぶん）。
+
+## 余談
+
+<blockquote class="twitter-tweet">
+  <p lang="ja" dir="ltr">
+    最高便利に使ってます
+  </p>
+  &mdash; kmuto (@kmuto){' '}
+  <a href="https://twitter.com/kmuto/status/1887359186583146853?ref_src=twsrc%5Etfw">
+    February 6, 2025
+  </a>
+</blockquote>
+<script
+  async
+  src="https://platform.twitter.com/widgets.js"
+  charset="utf-8"
+></script>
+
+諸事情でツールを作ってから約半年、ブログを書こうと思ってからひと月以上も経過していた…😇  
+そして使ってくれているの超絶ありがたい🙌

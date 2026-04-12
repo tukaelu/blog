@@ -1,0 +1,5 @@
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Content-Security-Policy: default-src 'self'; script-src 'self' __CSP_SCRIPT_HASHES__ https://s.hatena.ne.jp https://www.googletagmanager.com https://platform.twitter.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com; frame-src https://s.hatena.ne.jp https://platform.twitter.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'

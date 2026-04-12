@@ -1,0 +1,79 @@
+---
+import '@/styles/global.css'
+import BaseHead from '@components/BaseHead.astro'
+import Header from '@components/Header.astro'
+import Footer from '@components/Footer.astro'
+
+interface Props {
+  title: string
+  description: string
+  slug?: string
+  isArticle?: boolean
+  lang?: 'ja' | 'en'
+}
+
+const { title, description, slug, isArticle = false, lang = 'ja' } = Astro.props
+---
+
+<html lang={lang}>
+  <head>
+    <BaseHead
+      title={title}
+      description={description}
+      slug={slug}
+      isArticle={isArticle}
+      lang={lang}
+    />
+
+    <!-- Dark mode: prevent FOUC -->
+    <script is:inline>
+      if (
+        localStorage.getItem('theme') === 'dark' ||
+        (!('theme' in localStorage) &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches)
+      ) {
+        document.documentElement.classList.add('dark')
+      }
+    </script>
+
+    <!-- Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-1BL1KNN50T"
+    ></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || []
+      function gtag() {
+        dataLayer.push(arguments)
+      }
+      gtag('js', new Date())
+      gtag('config', 'G-1BL1KNN50T')
+    </script>
+
+    {
+      isArticle && (
+        <>
+          <script
+            type="text/javascript"
+            src="https://s.hatena.ne.jp/js/HatenaStar.js"
+            defer
+          />
+          <script type="text/javascript" src="/hatena-star-config.js" defer />
+        </>
+      )
+    }
+  </head>
+  <body class="font-sans bg-odwr-100 dark:bg-zinc-800 flex flex-col min-h-screen">
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-odwr-300 focus:text-zinc-900 focus:rounded"
+    >
+      メインコンテンツへスキップ
+    </a>
+    <Header />
+    <main id="main-content" class="mx-auto w-full max-w-3xl flex-grow px-4 py-8 md:px-0">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

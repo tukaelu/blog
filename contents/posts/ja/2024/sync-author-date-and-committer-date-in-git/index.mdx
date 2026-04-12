@@ -1,0 +1,134 @@
+---
+title: 'GitでAuthor DateとCommiter Dateを揃える'
+slug: sync-author-date-and-committer-date-in-git
+description: 'git logをした際に表示される日付には、Author DateとCommitter Dateがあります。この2つについて軽くまとめたのと、日付を揃える方法について記載しました。'
+tags:
+  - tech
+publishedAt: '2024/06/10 19:30:00.000+09:00'
+createdAt: '2024/06/10 19:30:00.000+09:00'
+updatedAt: '2024/06/10 19:30:00.000+09:00'
+icon: 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/First%20quarter%20moon/Flat/first_quarter_moon_flat.svg'
+---
+
+少し前に知人とGitの話題になり「コミット後のちょっとした修正で`git commit --amend`するけど、`git log`しても日付って変わらないのね」と言われて、AuthorとCommitterの話をしました。
+
+## TL;DR
+
+- GitにはAuthorとCommiterという概念があり、それぞれによる作業日付が記録されています。
+- `git log --pretty=fuller`を実行すると、`Author Date`と`Committer Date`が確認できます。
+- `Author Date`は`--amend`で、`Committer Date`は`rebase`でオプションを併用すると書き換えられます。
+- ただし日付の書き換えは、リポジトリに関わる他のメンバーに影響がない範囲で行うようにしましょう。
+
+## --amendによるコミット記録の書き換えでは日付が変わらない？
+
+コミットに対して追加修正を含める（=コミット自体を修正する）場合に`commit --amend`を行いますが、実行前後のログの日付を確認してみます。
+
+```sh
+$ git log
+commit 1b0f146212cecb3a9fa090eb85d71a662315176c (HEAD -> main)
+Author: Hoge Fuga <hoge@example.com>
+Date:   Mon Jun 10 18:50:32 2024 +0900
+
+    initial commit
+
+$ git commit --amend
+
+$ git log
+commit bb2e1ea5af18504baac4de3565d0b839651a080f (HEAD -> main)
+Author: Hoge Fuga <hoge@example.com>
+Date:   Mon Jun 10 18:50:32 2024 +0900
+
+    initial commit
+```
+
+変わらずどちらも`Mon Jun 10 18:50:32 2024 +0900`となっていますね。
+
+なぜかというと、ここで表示されているのは`Author`によって記録された日時だからです。
+
+## AuthorとCommitterとは？
+
+[Pro Git](https://git-scm.com/book/en/v2)の「[2.3 Viewing the Commit History](https://git-scm.com/book/en/v2/Git-Basics-Viewing-the-Commit-History)」には、`Author`は作業を行った人、`Committer`はその作業を適用した人と記載がされています。
+
+> You may be wondering what the difference is between author and committer. The author is the person who originally wrote the work, whereas the committer is the person who last applied the work. So, if you send in a patch to a project and one of the core members applies the patch, both of you get credit — you as the author, and the core member as the committer.
+
+AuthorとCommitterの詳しい位置づけについては「[5.1 Distributed Workflows](https://git-scm.com/book/en/v2/Distributed-Git-Distributed-Workflows)」に記載されているので割愛しますが、ローカルリポジトリでは通常「作業を行った人=作業を適用した人」になるので、コミット直後はAuthorによる作業日時とCommitterによる作業日時は同じ日時を示します。
+
+サブコマンドの`log`に`--pretty=fuller`オプションを付けてコミットログを見てみます。
+
+```sh
+commit bb2e1ea5af18504baac4de3565d0b839651a080f (HEAD -> main)
+Author:     Hoge Fuga <hoge@example.com>
+AuthorDate: Mon Jun 10 18:50:32 2024 +0900
+Commit:     Hoge Fuga <hoge@example.com>
+CommitDate: Mon Jun 10 18:55:16 2024 +0900
+
+    initial commit
+```
+
+Authorの下のDateが`Author Date`に変化して、その下にCommitとCommit Dateが追加されました。
+`AuthorDate`については`Mon Jun 10 18:50:32 2024 +0900`ですが、`CommitDate`は`Mon Jun 10 18:55:16 2024 +0900`と時間がずれています。この時間が`commit --amend`をした時間になります。
+
+ざっくりまとめると次のようになります。
+
+- `AuthorDate`は基本はコミットが作成された日時が記録される
+- `CommitDate`も`AuthorDate`と同様になる
+- ただし`CommitDate`はそのコミットに対して`commit --amend`や`rebase`などが行われると、Committerによりその作業を適用した日時で上書きされる
+
+## それぞれの日付を書き換える
+
+例えばローカルで修正中に頻繁に`commit --amend`を繰り返して`AuthorDate ≠ CommitDate`となった状態を`AuthorDate = CommitDate`にしたいという場合も考えられます。
+その場合は`rebase`のオプションに`--committer-date-is-author-date`を付与することで、CommitDateをAuthorDateに揃えることができます。
+
+```sh
+$ git rebase <branch> --committer-date-is-author-date
+```
+
+今回は初回コミットに対して操作するので`--root`オプションでrebaseします。
+
+```sh
+$ git rebase --root --committer-date-is-author-date
+$ git log --pretty=fuller
+commit 849cfd5be35d65fc93925eb9b584c6abbfebb0d6 (HEAD -> main)
+Author:     Hoge Fuga <hoge@example.com>
+AuthorDate: Mon Jun 10 18:50:32 2024 +0900
+Commit:     Hoge Fuga <hoge@example.com>
+CommitDate: Mon Jun 10 18:50:32 2024 +0900
+
+    initial commit
+```
+
+AuthorDateとCommitDateが`Mon Jun 10 18:50:32 2024 +0900`で揃いました！
+
+上記はCommitDateをAuthorDateに合わせましたが、逆にCommitDateに合わせたい場合は次のようにします。
+
+```sh
+$ git rebase <branch> --ignore-date
+```
+
+またAuthorDateを書き換えることもできます。`commit --amend --date="<日時>"`で可能です。
+
+```sh
+$ git log
+commit 1b0f146212cecb3a9fa090eb85d71a662315176c (HEAD -> main)
+Author: Hoge Fuga <hoge@example.com>
+Date:   Mon Jun 10 18:50:32 2024 +0900
+
+    initial commit
+
+$ git commit --amend --date="Mon Jun 10 18:30:32 2024 +0900"
+
+$ git log
+commit 1b0f146212cecb3a9fa090eb85d71a662315176c (HEAD -> main)
+AuthorDate: Hoge Fuga <hoge@example.com>
+Date:   Mon Jun 10 18:30:32 2024 +0900
+Commit:     Hoge Fuga <hoge@example.com>
+CommitDate: Mon Jun 10 19:27:15 2024 +0900
+
+    initial commit
+```
+
+ただしこの時はもちろんCommitDateが更新されるので、必要に応じて`--committer-date-is-author-date`で合わせましょう。
+
+### 最後に
+
+日付を改ざんすることはそうそうやるオペレーションではないですが、何らかの理由で揃えたい時はありそうです。そんな時に備えて、AuthorとCommiterという概念を覚えておくと便利かなと思います！

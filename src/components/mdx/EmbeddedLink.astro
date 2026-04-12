@@ -1,0 +1,98 @@
+---
+import { parse } from 'node-html-parser'
+
+interface Props {
+  url: string
+}
+
+interface OGP {
+  title: string
+  description: string
+  url: string
+  image: string
+  imageAlt?: string
+  favicon?: string
+}
+
+const { url } = Astro.props
+
+let ogp: OGP | null = null
+try {
+  const parsed = new URL(url)
+  if (!['http:', 'https:'].includes(parsed.protocol)) {
+    throw new Error(`Unsupported protocol: ${parsed.protocol}`)
+  }
+
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 5000)
+
+  let res: Response
+  try {
+    res = await fetch(url, { signal: controller.signal })
+  } finally {
+    clearTimeout(timeoutId)
+  }
+
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status}`)
+  }
+
+  const html = await res.text()
+  const root = parse(html)
+
+  const getMeta = (property: string) =>
+    root
+      .querySelector(`meta[property="${property}"]`)
+      ?.getAttribute('content') ?? ''
+
+  const host = parsed.host
+
+  ogp = {
+    title: getMeta('og:title'),
+    description: getMeta('og:description'),
+    url: getMeta('og:url') || url,
+    image: getMeta('og:image'),
+    imageAlt: getMeta('og:image:alt') || undefined,
+    favicon: `https://www.google.com/s2/favicons?domain=${host}&sz=20`,
+  }
+} catch (e) {
+  console.error(`Failed to fetch OGP for ${url}:`, e instanceof Error ? e.message : e)
+}
+---
+
+{ogp ? (
+  <a
+    href={url}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="flex gap-2 items-center"
+  >
+    <div class="flex border not-prose dark:border-gray-600 rounded-lg no-underline h-[136px] max-md:h-28 my-4 w-full">
+      <div class="flex flex-col justify-between h-full w-full px-6 py-4 max-md:px-4 rounded-l-lg bg-zinc-50/85 dark:bg-zinc-800">
+        <span class="font-bold text-ellipsis line-clamp-1 max-md:text-sm">
+          {ogp.title}
+        </span>
+        <span class="text-sm text-ellipsis line-clamp-2 text-gray-500 dark:text-gray-300 max-md:text-xs">
+          {ogp.description}
+        </span>
+        <div class="flex gap-2 items-center">
+          {ogp.favicon && (
+            <img src={ogp.favicon} width={16} height={16} alt={new URL(url).host} />
+          )}
+          <span class="text-xs">{new URL(url).host}</span>
+        </div>
+      </div>
+      {ogp.image && (
+        <div class="h-full shrink-0">
+          <img
+            src={ogp.image}
+            class="my-0 h-full w-fit rounded-r-lg object-cover max-w-[32vw]"
+            alt={ogp.imageAlt || ogp.title}
+          />
+        </div>
+      )}
+    </div>
+  </a>
+) : (
+  <a href={url} target="_blank" rel="noopener noreferrer">{url}</a>
+)}

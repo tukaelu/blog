@@ -1,0 +1,64 @@
+---
+title: '[Astro] Cloudflare PagesのHybrid RenderingでSSR時にenvが参照できない問題への対処法'
+slug: cloudflare-pages-hybrid-rendering-env-issue-on-ssr
+description: 'AstroのHybrid RenderingをCloudflare Pagesで行う際、SSR時にenvが参照できない問題とその解決方法についてまとめました。'
+tags:
+  - tech
+  - astro
+publishedAt: '2024/06/02 12:39:00.000+09:00'
+createdAt: '2024/06/02 12:39:00.000+09:00'
+updatedAt: '2024/06/02 12:39:00.000+09:00'
+icon: 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Man%20astronaut/Light/Flat/man_astronaut_flat_light.svg'
+---
+
+AstroでSSGしているこのサイトに下書きプレビュー機能（SSR）を実装するため、Hybrid Renderingを有効にしたのですが、ローカル環境では問題ないもののCloudflare上でいざ確認するとSSRに失敗していました。
+
+## 原因
+
+Cloudflareのリアルタイムログを見ると、次のようなメッセージ（一部抜粋）が出力されていました。
+
+```error
+[ERROR] Error: hoge parameter is required.
+```
+
+HeadlessCMSに渡すような変数（仮に`hoge`）の値は`import.meta.env.HOGE`のように環境変数を参照していて、どうもそれが正しく参照できていない模様。色々と試行錯誤するものの解消せず、AstroのIssueを探していたら同じ事象に関するものが報告されていました。
+
+<div
+  class="iframely-embed"
+  data-embedded-url="https://github.com/withastro/astro/issues/4416"
+>
+  <div class="iframely-responsive" style="height: 140px; padding-bottom: 0;">
+    <a
+      href="https://github.com/withastro/astro/issues/4416"
+      data-iframely-url="//cdn.iframe.ly/api/iframe?card=small&url=https%3A%2F%2Fgithub.com%2Fwithastro%2Fastro%2Fissues%2F4416&key=878c5bef402f0b2911bf6d4ce6261abd"
+    >
+      Secret env variables undefined during server build with Cloudflare SSR ·
+      Issue #4416 · withastro/astro
+    </a>
+  </div>
+</div>
+<script async src="//cdn.iframe.ly/embed.js" charset="utf-8"></script>
+
+Astroは`import.meta.env.HOGE`のように参照すると内部的には`process.env.HOGE`を参照しているようなのですが、Cloudflare Workersでは`process.env.*`がビルドする際に反映されないために問題が起きているようでした。
+
+## 解決方法
+
+ワークアラウンドとしてastro.config.mjsに`vite.define`を追記して、`process.env.HOGE`を次のように置き換えてあげます。
+
+```js
+export default defineConfig({
+ :
+  output: "hybrid",
+  adapter: cloudflare(),
+  vite: {
+    define: {
+      "process.env.HOGE": JSON.stringify(process.env.HOGE),
+      "process.env.FOO": JSON.stringify(process.env.FOO),
+      "process.env.BAR": JSON.stringify(process.env.BAR),
+    }
+  }
+ :
+})
+```
+
+これでデプロイしたら正常に動作しました！

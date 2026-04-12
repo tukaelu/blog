@@ -1,0 +1,32 @@
+---
+import type { ImageMetadata } from 'astro'
+
+interface Props {
+  src?: string | ImageMetadata
+  alt?: string
+  [key: string]: unknown
+}
+
+const { src, alt = '', ...rest } = Astro.props
+
+const isMeta = src && typeof src === 'object'
+const imgSrc = isMeta ? src.src : (src as string)
+const imgWidth = isMeta ? src.width : undefined
+const imgHeight = isMeta ? src.height : undefined
+---
+
+<div class="flex justify-center">
+  <figure class="mb-4 inline-block" title={alt}>
+    <img
+      src={imgSrc}
+      alt={alt}
+      width={imgWidth}
+      height={imgHeight}
+      class="max-w-full h-auto"
+      loading="lazy"
+      decoding="async"
+      {...rest}
+    />
+    {alt && <figcaption class="text-center">{alt}</figcaption>}
+  </figure>
+</div>

@@ -1,0 +1,157 @@
+---
+
+---
+
+<div class="pointer-events-auto">
+  <button
+    id="search-button"
+    type="button"
+    aria-label="検索"
+    class="group p-2 transition"
+  >
+    <svg
+      class="h-6 w-6 stroke-zinc-500 transition group-hover:stroke-zinc-700 dark:stroke-zinc-400 dark:group-hover:stroke-zinc-200"
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-width="1.5"
+        d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"
+      />
+    </svg>
+  </button>
+</div>
+
+<dialog
+  id="search-dialog"
+  class="m-auto px-4 py-5 h-4/5 w-4/5 md:w-3/4 lg:w-2/4 rounded-lg backdrop:bg-gray-900 backdrop:bg-opacity-60 dark:bg-zinc-800"
+>
+  <div id="search" class="h-full w-full"></div>
+</dialog>
+
+<script>
+  let pagefindLoaded = false;
+
+  function loadPagefind(): Promise<void> {
+    if (pagefindLoaded) return Promise.resolve();
+
+    return new Promise((resolve, reject) => {
+      // Load CSS
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = '/pagefind/pagefind-ui.css';
+      document.head.appendChild(link);
+
+      // Load JS
+      const script = document.createElement('script');
+      script.src = '/pagefind/pagefind-ui.js';
+      script.onload = () => {
+        pagefindLoaded = true;
+        resolve();
+      };
+      script.onerror = () => reject(new Error('Failed to load Pagefind'));
+      document.head.appendChild(script);
+    });
+  }
+
+  function initPagefindUI() {
+    const container = document.getElementById('search');
+    if (!container || container.children.length > 0) return;
+
+    // @ts-ignore - PagefindUI is loaded dynamically
+    new PagefindUI({
+      element: '#search',
+      baseUrl: '/',
+      pageSize: 10,
+      excerptLength: 50,
+      showSubResults: true,
+      translations: {
+        placeholder: 'Search...',
+        clear_search: 'クリア',
+        load_more: '続きを見る',
+        zero_results:
+          '「[SEARCH_TERM]」に一致する記事は見つかりませんでした。',
+        many_results: '「[SEARCH_TERM]」の検索結果（[COUNT] 件）',
+        one_result: '「[SEARCH_TERM]」の検索結果（[COUNT] 件）',
+      },
+      debounceTimeoutMs: 400,
+    });
+  }
+
+  const searchButton = document.getElementById('search-button');
+  const searchDialog = document.getElementById(
+    'search-dialog'
+  ) as HTMLDialogElement | null;
+
+  searchButton?.addEventListener('click', async () => {
+    if (!searchDialog) return;
+    searchDialog.showModal();
+    await loadPagefind();
+    initPagefindUI();
+    // Focus the search input after UI is initialized
+    const input = searchDialog.querySelector<HTMLInputElement>(
+      '.pagefind-ui__search-input'
+    );
+    input?.focus();
+  });
+
+  searchDialog?.addEventListener('click', (event) => {
+    if (event.target === searchDialog) {
+      searchDialog.close();
+    }
+  });
+
+  searchDialog?.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      searchDialog.close();
+    }
+  });
+</script>
+
+<style is:global>
+  /* Pagefind dark mode overrides */
+  .dark #search .pagefind-ui__search-input {
+    background-color: rgb(63 63 70); /* zinc-700 */
+    color: rgb(228 228 231); /* zinc-200 */
+    border-color: rgb(82 82 91); /* zinc-600 */
+  }
+
+  .dark #search .pagefind-ui__search-clear {
+    color: rgb(161 161 170); /* zinc-400 */
+  }
+
+  .dark #search .pagefind-ui__result-link {
+    color: rgb(147 197 253); /* blue-300 */
+  }
+
+  .dark #search .pagefind-ui__result-excerpt {
+    color: rgb(212 212 216); /* zinc-300 */
+  }
+
+  .dark #search .pagefind-ui__message {
+    color: rgb(161 161 170); /* zinc-400 */
+  }
+
+  .dark #search .pagefind-ui__button {
+    background-color: rgb(63 63 70); /* zinc-700 */
+    color: rgb(228 228 231); /* zinc-200 */
+  }
+
+  .dark #search .pagefind-ui__result {
+    border-color: rgb(63 63 70); /* zinc-700 */
+  }
+
+  .dark #search .pagefind-ui__result-title,
+  .dark #search .pagefind-ui__result-nested .pagefind-ui__result-title {
+    color: rgb(228 228 231); /* zinc-200 */
+  }
+
+  .dark #search mark {
+    background-color: rgb(250 204 21 / 0.3); /* yellow highlight */
+    color: inherit;
+  }
+</style>

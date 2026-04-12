@@ -1,0 +1,66 @@
+---
+import { SITE_DOMAIN, SITE_TITLE } from '@lib/constants'
+
+interface Props {
+  title: string
+  description: string
+  slug?: string
+  isArticle?: boolean
+  lang?: 'ja' | 'en'
+}
+
+const { title, description, slug, isArticle = false, lang = 'ja' } = Astro.props
+
+const ogLocale = lang === 'en' ? 'en_US' : 'ja_JP'
+const ogType = isArticle ? 'article' : 'website'
+const ogUrl = isArticle
+  ? `https://${SITE_DOMAIN}${lang === 'en' ? '/en' : ''}/posts/${slug}`
+  : `https://${SITE_DOMAIN}`
+const ogImagePath = lang === 'en' ? `/en/ogp/${slug}.png` : `/ogp/${slug}.png`
+const ogImage = isArticle
+  ? `https://${SITE_DOMAIN}${ogImagePath}`
+  : undefined
+
+const hreflangJa = isArticle
+  ? `https://${SITE_DOMAIN}/posts/${slug}`
+  : `https://${SITE_DOMAIN}/`
+const hreflangEn = isArticle
+  ? `https://${SITE_DOMAIN}/en/posts/${slug}`
+  : `https://${SITE_DOMAIN}/en/`
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+
+<!-- Performance optimization: DNS prefetch for external resources -->
+<link rel="dns-prefetch" href="https://s.hatena.ne.jp" />
+<link rel="dns-prefetch" href="https://raw.githubusercontent.com" />
+
+<title>{title}</title>
+<meta name="title" content={title} />
+<meta name="description" content={description} />
+
+<!-- OGP -->
+<meta property="og:site_name" content={SITE_TITLE} />
+<meta property="og:locale" content={ogLocale} />
+<meta property="og:type" content={ogType} />
+<meta property="og:title" content={title} />
+<meta property="og:url" content={ogUrl} />
+<meta property="og:description" content={description} />
+{ogImage && <meta property="og:image" content={ogImage} />}
+<meta name="twitter:card" content="summary_large_image" />
+
+<!-- hreflang -->
+<link rel="alternate" hreflang="ja" href={hreflangJa} />
+<link rel="alternate" hreflang="en" href={hreflangEn} />
+<link rel="alternate" hreflang="x-default" href={hreflangJa} />
+
+<link rel="icon" href="/favicon.ico" />
+<link rel="sitemap" href="/sitemap-index.xml" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="RSS2.0"
+  href="/rss.xml"
+/>
+<link rel="author" href="https://www.hatena.ne.jp/tukaelu/" />

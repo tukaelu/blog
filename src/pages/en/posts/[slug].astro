@@ -1,0 +1,27 @@
+---
+import PostLayout from '@layouts/PostLayout.astro'
+import Anchor from '@components/mdx/Anchor.astro'
+import Image from '@components/mdx/Image.astro'
+import { render } from 'astro:content'
+import { getPublishedPosts } from '@lib/posts'
+import type { EnPost } from '@lib/posts'
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts('en')
+  return posts.map(post => ({
+    params: { slug: post.data.slug },
+    props: { post },
+  }))
+}
+
+interface Props {
+  post: EnPost
+}
+
+const { post } = Astro.props
+const { Content } = await render(post)
+---
+
+<PostLayout post={post} lang="en">
+  <Content components={{ a: Anchor, img: Image }} />
+</PostLayout>

@@ -1,0 +1,43 @@
+---
+title: 'HonoXで開発中にpublic配下のファイルにアクセスする'
+slug: 'how-to-access-public-files-on-honox-devserver'
+description: 'HonoXでpublic配下にあるファイルに開発サーバーでアクセスするにはexcludeで除外指定する必要がありました。'
+tags:
+  - tech
+  - honox
+publishedAt: '2024-11-06T09:31:07.524+09:00'
+createdAt: '2024-11-06T09:31:07.524+09:00'
+updatedAt: '2024-11-06T09:31:07.524+09:00'
+icon: 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/master/assets/Fire/Flat/fire_flat.svg'
+---
+
+import EmbeddedLink from '@components/mdx/EmbeddedLink.astro'
+
+x-basicのテンプレートで作成したHonoXプロジェクトのルートディレクトリにある`public`の配下のファイルは、開発サーバーではアクセスができなかった。
+
+[@hono/vite-dev-server](https://github.com/honojs/vite-plugins/tree/main/packages/dev-server#exclude)のREADMEに、`public/assets/*`配下の静的ファイルを返したければ`exclude`で`/assets/*`を除外することと書かれていた。
+
+例えば、`public`配下にある拡張子がwebp, png, svgの画像を開発サーバーでアクセスするには、次のようにexcludeの設定することで対応できる。
+
+```javascript
+export default defineConfig(({ mode }) => {
+  return {
+    plugins: [
+      :
+      honox({
+        devServer: {
+          adapter,
+          exclude: [
+            ...devServerDefaultOptions.exclude,
+            /\.(webp|png|svg)$/,
+          ],
+        },
+      }),
+      :
+```
+
+調べると同様のIssueも上がっていた。
+
+<EmbeddedLink url="https://github.com/honojs/honox/issues/218" />
+
+忘れそうなので覚書として残しておく。

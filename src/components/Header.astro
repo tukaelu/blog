@@ -1,0 +1,48 @@
+---
+import ThemeToggle from '@components/ui/ThemeToggle.astro'
+---
+
+<header
+  class="sticky top-0 z-50 border-zinc-200 border-b py-3 backdrop-blur transition-colors dark:border-zinc-600 dark:bg-zinc-800"
+>
+  <div
+    class="mx-auto flex max-w-4xl items-center justify-between px-4 md:px-0"
+  >
+    <a href="/" data-home-link class="hover:underline" aria-label="ホームに戻る">
+      <span class="font-bold text-lg dark:text-zinc-400">nsymtks.com</span>
+    </a>
+    <div class="flex items-center gap-3">
+      {/* <span id="lang-switcher" class="flex items-center gap-1 text-sm"></span> */}
+      <ThemeToggle />
+    </div>
+  </div>
+</header>
+
+{/*
+<script>
+  const langLabels: Record<string, string> = { ja: 'JA', en: 'EN' }
+  const pathname = window.location.pathname
+  const currentLang = pathname.startsWith('/en') ? 'en' : 'ja'
+  const base = pathname.replace(/^\/en/, '') || '/'
+  const urls: Record<string, string> = { ja: base, en: '/en' + base }
+
+  const homeLink = document.querySelector<HTMLAnchorElement>('[data-home-link]')
+  if (homeLink) homeLink.href = currentLang === 'en' ? '/en/' : '/'
+
+  const switcher = document.getElementById('lang-switcher')
+  if (switcher) {
+    switcher.innerHTML = ['en', 'ja']
+      .map((l, i) => {
+        const sep = i > 0 ? '<span class="text-zinc-400 dark:text-zinc-500">|</span>' : ''
+        if (l === currentLang) {
+          return sep + `<span class="text-zinc-400 dark:text-zinc-500 cursor-default">${langLabels[l]}</span>`
+        }
+        return (
+          sep +
+          `<a href="${urls[l]}" class="text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200 transition">${langLabels[l]}</a>`
+        )
+      })
+      .join('')
+  }
+</script>
+*/}

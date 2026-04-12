@@ -1,0 +1,28 @@
+---
+import { formatDate } from '@lib/date'
+import type { Post, EnPost } from '@lib/posts'
+
+interface Props {
+  post: Post | EnPost
+  lang?: 'ja' | 'en'
+}
+
+const { post, lang = 'ja' } = Astro.props
+const { title, slug, description, publishedAt } = post.data
+const basePath = lang === 'en' ? '/en/posts' : '/posts'
+const formattedDate = formatDate(publishedAt, lang)
+---
+
+<a href={`${basePath}/${slug}`} class="block group">
+  <div class="flex flex-col gap-2">
+    <span class="text-sm text-gray-500 dark:text-zinc-400">
+      {formattedDate}
+    </span>
+    <h2 class="text-xl font-semibold dark:text-zinc-200 group-hover:underline">
+      {title}
+    </h2>
+    <p class="text-base text-gray-600 dark:text-zinc-400 line-clamp-2">
+      {description}
+    </p>
+  </div>
+</a>
