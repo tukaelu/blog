@@ -1,6 +1,54 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
+  "extends": ["config:recommended", ":timezone(Asia/Tokyo)"],
+  "schedule": ["after 6pm and before 8am on every weekday", "every weekend"],
+  "labels": ["renovate"],
+  "lockFileMaintenance": {
+    "automerge": true
+  },
+  "npm": {
+    "rangeStrategy": "bump"
+  },
+  "vulnerabilityAlerts": {
+    "labels": ["security"]
+  },
+  "packageRules": [
+    {
+      "matchDepTypes": ["action"],
+      "pinDigests": true
+    },
+    {
+      "matchUpdateTypes": ["patch", "digest"],
+      "automerge": true
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "labels": ["renovate", "major"]
+    },
+    {
+      "matchPackageNames": ["@types/**"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true
+    },
+    {
+      "groupName": "astro",
+      "matchPackageNames": ["astro", "@astrojs/**"]
+    },
+    {
+      "groupName": "unocss",
+      "matchPackageNames": ["unocss", "@unocss/**"]
+    },
+    {
+      "groupName": "date-fns",
+      "matchPackageNames": ["date-fns", "date-fns-tz"]
+    },
+    {
+      "groupName": "syntax highlighting",
+      "matchPackageNames": ["shiki", "rehype-pretty-code"]
+    },
+    {
+      "groupName": "linters",
+      "matchPackageNames": ["/eslint/", "prettier", "stylelint"]
+    }
   ]
 }
