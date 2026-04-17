@@ -21,8 +21,8 @@ jobs:
 
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
-          node-version-file: ".node-version"
-          cache: "pnpm"
+          node-version-file: '.node-version'
+          cache: 'pnpm'
 
       - run: pnpm install --frozen-lockfile
 
@@ -41,7 +41,7 @@ jobs:
         with:
           header: preview-deployment
           hide_and_recreate: true
-          hide_classify: "OUTDATED"
+          hide_classify: 'OUTDATED'
           message: |
             ## 🚀 Deploying ${{ github.event.repository.name }} with Cloudflare Workers
             <table>

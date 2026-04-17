@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
     paths-ignore:
-      - "contents/**"
+      - 'contents/**'
 
 jobs:
   lint:
@@ -19,8 +19,8 @@ jobs:
 
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
-          node-version-file: ".node-version"
-          cache: "pnpm"
+          node-version-file: '.node-version'
+          cache: 'pnpm'
 
       - run: pnpm install --frozen-lockfile
 
@@ -38,8 +38,8 @@ jobs:
 
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
-          node-version-file: ".node-version"
-          cache: "pnpm"
+          node-version-file: '.node-version'
+          cache: 'pnpm'
 
       - run: pnpm install --frozen-lockfile
 

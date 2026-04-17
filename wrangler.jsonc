@@ -1,8 +1,6 @@
 {
   "compatibility_date": "2026-04-08",
-  "compatibility_flags": [
-    "global_fetch_strictly_public"
-  ],
+  "compatibility_flags": ["global_fetch_strictly_public"],
   "name": "bonsai-blog",
   "main": "@astrojs/cloudflare/entrypoints/server",
   "assets": {
@@ -15,7 +13,7 @@
   "kv_namespaces": [
     {
       "binding": "SESSION",
-      "id": "2c91ee1be1334434ad2fa6e2fd7fa837"
-    }
-  ]
+      "id": "2c91ee1be1334434ad2fa6e2fd7fa837",
+    },
+  ],
 }
