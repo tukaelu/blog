@@ -24,7 +24,7 @@
     "wrangler": "^4.81.0"
   },
   "overrides": {
-    "vite": "^7"
+    "vite": "^7.3.2"
   },
   "devDependencies": {
     "@resvg/resvg-js": "^2.6.2",
