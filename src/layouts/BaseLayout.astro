@@ -38,6 +38,7 @@ const { title, description, slug, isArticle = false, lang = 'ja' } = Astro.props
 
     <!-- Google Analytics -->
     <script
+      is:inline
       async
       src="https://www.googletagmanager.com/gtag/js?id=G-1BL1KNN50T"
     ></script>
@@ -54,11 +55,17 @@ const { title, description, slug, isArticle = false, lang = 'ja' } = Astro.props
       isArticle && (
         <>
           <script
+            is:inline
             type="text/javascript"
             src="https://s.hatena.ne.jp/js/HatenaStar.js"
             defer
           />
-          <script type="text/javascript" src="/hatena-star-config.js" defer />
+          <script
+            is:inline
+            type="text/javascript"
+            src="/hatena-star-config.js"
+            defer
+          />
         </>
       )
     }
