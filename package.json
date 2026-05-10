@@ -7,9 +7,9 @@
   },
   "scripts": {
     "dev": "rm -rf node_modules/.vite .astro .wrangler && astro dev",
-    "build": "astro build && tsx scripts/generate-ogp.ts && pagefind --site dist/client && cp -r dist/client/pagefind public/pagefind && tsx scripts/update-csp.ts",
+    "build": "astro build",
     "preview": "astro preview",
-    "deploy": "pnpm build && wrangler deploy",
+    "deploy": "astro build && wrangler deploy",
     "fmt": "prettier --write .",
     "fmt:check": "prettier --check .",
     "astro": "astro",
@@ -43,7 +43,6 @@
     "remark-gfm": "^4.0.1",
     "satori": "^0.26.0",
     "shiki": "^4.0.2",
-    "tsx": "^4.21.0",
     "unocss": "^66.6.8"
   }
 }
