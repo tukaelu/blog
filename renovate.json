@@ -1,7 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:best-practices", ":timezone(Asia/Tokyo)"],
-  "schedule": ["after 6pm and before 8am on every weekday", "every weekend"],
+  "schedule": [
+    "after 6pm every weekday",
+    "every weekend",
+    "before 8am every weekday"
+  ],
   "labels": ["renovate"],
   "dependencyDashboard": true,
   "osvVulnerabilityAlerts": true,
