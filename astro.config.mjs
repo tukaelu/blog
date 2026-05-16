@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig } from 'astro/config'
+import { defineConfig, envField } from 'astro/config'
 
 import mdx from '@astrojs/mdx'
 import cloudflare from '@astrojs/cloudflare'
@@ -25,6 +25,15 @@ export default defineConfig({
     updateCsp(),
   ],
   adapter: cloudflare(),
+  env: {
+    schema: {
+      PUBLIC_GA_ID: envField.string({
+        context: 'client',
+        access: 'public',
+        optional: true,
+      }),
+    },
+  },
   markdown: {
     remarkPlugins: [remarkGfm],
     rehypePlugins: [[rehypePrettyCode, { theme: 'github-dark' }]],
