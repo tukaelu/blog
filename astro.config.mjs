@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig } from 'astro/config'
+import { defineConfig, envField } from 'astro/config'
 
 import mdx from '@astrojs/mdx'
 import cloudflare from '@astrojs/cloudflare'
@@ -8,12 +8,32 @@ import UnoCSS from '@unocss/astro'
 import remarkGfm from 'remark-gfm'
 import rehypePrettyCode from 'rehype-pretty-code'
 
+import ogpImages from './src/integrations/ogp-images.ts'
+import pagefind from './src/integrations/pagefind.ts'
+import updateCsp from './src/integrations/update-csp.ts'
+
 // https://astro.build/config
 export default defineConfig({
   site: 'https://nsymtks.com',
   output: 'static',
-  integrations: [UnoCSS({ injectReset: true }), mdx(), sitemap()],
+  integrations: [
+    UnoCSS({ injectReset: true }),
+    mdx(),
+    sitemap(),
+    ogpImages(),
+    pagefind(),
+    updateCsp(),
+  ],
   adapter: cloudflare(),
+  env: {
+    schema: {
+      PUBLIC_GA_ID: envField.string({
+        context: 'client',
+        access: 'public',
+        optional: true,
+      }),
+    },
+  },
   markdown: {
     remarkPlugins: [remarkGfm],
     rehypePlugins: [[rehypePrettyCode, { theme: 'github-dark' }]],

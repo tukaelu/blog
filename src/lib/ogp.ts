@@ -1,19 +1,13 @@
 import satori from 'satori'
 import { Resvg } from '@resvg/resvg-js'
+import { loadDefaultJapaneseParser } from 'budoux'
 import fs from 'node:fs'
 import path from 'node:path'
 
 import { SITE_DOMAIN } from './constants'
 
-let parser: { parse: (text: string) => string[] } | null = null
+const parser = loadDefaultJapaneseParser()
 const fontCache = new Map<string, ArrayBuffer>()
-
-const getParser = async () => {
-  if (parser) return parser
-  const budoux = await import('budoux')
-  parser = budoux.loadDefaultJapaneseParser()
-  return parser
-}
 
 const fetchFontData = async (): Promise<void> => {
   const [fontRegular, fontBold] = await Promise.all([
@@ -56,8 +50,7 @@ export const generateOgpImage = async (title: string): Promise<Buffer> => {
     throw new Error('Font data not loaded')
   }
 
-  const p = await getParser()
-  const lineBreakedTitle = p.parse(title)
+  const lineBreakedTitle = parser.parse(title)
   const avatarDataUrl = getAvatarDataUrl()
 
   const svg = await satori(
