@@ -1,8 +1,10 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended", ":timezone(Asia/Tokyo)"],
+  "extends": ["config:best-practices", ":timezone(Asia/Tokyo)"],
   "schedule": ["after 6pm and before 8am on every weekday", "every weekend"],
   "labels": ["renovate"],
+  "dependencyDashboard": true,
+  "osvVulnerabilityAlerts": true,
   "lockFileMaintenance": {
     "automerge": true
   },
@@ -14,11 +16,8 @@
   },
   "packageRules": [
     {
-      "matchDepTypes": ["action"],
-      "pinDigests": true
-    },
-    {
       "matchUpdateTypes": ["patch", "digest"],
+      "minimumReleaseAge": "3 days",
       "automerge": true
     },
     {
@@ -28,6 +27,7 @@
     {
       "matchPackageNames": ["@types/**"],
       "matchUpdateTypes": ["minor", "patch"],
+      "minimumReleaseAge": "3 days",
       "automerge": true
     },
     {
