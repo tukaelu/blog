@@ -10,7 +10,8 @@ function run(cmd: string, args: string[]): Promise<void> {
     child.on('error', reject)
     child.on('exit', code => {
       if (code === 0) resolve()
-      else reject(new Error(`${cmd} ${args.join(' ')} exited with code ${code}`))
+      else
+        reject(new Error(`${cmd} ${args.join(' ')} exited with code ${code}`))
     })
   })
 }
