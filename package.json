@@ -43,7 +43,7 @@
     "pagefind": "1.5.2",
     "prettier": "^3.8.3",
     "rehype-pretty-code": "0.14.3",
-    "remark-gfm": "^4.0.1",
+    "remark-gfm": "4.0.1",
     "satori": "0.26.0",
     "shiki": "4.0.2",
     "unocss": "66.6.8"
