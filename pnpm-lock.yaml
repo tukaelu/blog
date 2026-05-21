@@ -46,8 +46,8 @@ importers:
         specifier: 66.6.8
         version: 66.6.8
       budoux:
-        specifier: 0.8.3
-        version: 0.8.3
+        specifier: 0.8.4
+        version: 0.8.4
       date-fns:
         specifier: 4.1.0
         version: 4.1.0
@@ -1463,8 +1463,8 @@ packages:
     resolution: {integrity: sha512-kLpxurY4Z4r9sgMsyG0Z9uzsBlgiU/EFKhj/h91/8yHu0edo7XuixOIH3VcJ8kkxs6/jPzoI6U9Vj3WqbMQ94g==}
     engines: {node: 18 || 20 || >=22}
 
-  budoux@0.8.3:
-    resolution: {integrity: sha512-eXvG7EF8otMFoVX2o3R2FSrPpdQ/FM5tb+hmAzWFu1qCBDk//4m7N+w8sd7P1R1MS5r6yeMdLcG9nQku5QJ1wA==}
+  budoux@0.8.4:
+    resolution: {integrity: sha512-EogZewMIXDePuJeBetf2hQphKsTWup3oTaf4q4ibc3NPPW+wAvfpk5AsC71BxcfowGeO/5cHvzGd/d0x8bIYXQ==}
     hasBin: true
 
   buffer-equal-constant-time@1.0.1:
@@ -4327,7 +4327,7 @@ snapshots:
     dependencies:
       balanced-match: 4.0.4
 
-  budoux@0.8.3:
+  budoux@0.8.4:
     dependencies:
       commander: 14.0.3
       google-artifactregistry-auth: 3.5.0
