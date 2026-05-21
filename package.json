@@ -34,7 +34,7 @@
     "@unocss/astro": "66.6.8",
     "@unocss/preset-typography": "66.6.8",
     "@unocss/reset": "66.6.8",
-    "budoux": "0.8.3",
+    "budoux": "0.8.4",
     "date-fns": "4.1.0",
     "date-fns-tz": "3.2.0",
     "glob": "13.0.6",
