@@ -24,7 +24,7 @@
     "@astrojs/sitemap": "^3.7.2",
     "astro": "^6.3.7",
     "typescript": "^6.0.3",
-    "wrangler": "^4.93.1"
+    "wrangler": "^4.94.0"
   },
   "overrides": {
     "vite": "^8.0.14"
