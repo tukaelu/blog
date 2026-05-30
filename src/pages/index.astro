@@ -4,13 +4,27 @@ import PostCard from '@components/post/PostCard.astro'
 import { getListablePosts } from '@lib/posts'
 import { SITE_TITLE, SITE_DESCRIPTION } from '@lib/constants'
 
+const PAGE_SIZE = 5
 const posts = await getListablePosts()
+const totalPages = Math.ceil(posts.length / PAGE_SIZE)
+const pagePosts = posts.slice(0, PAGE_SIZE)
+const hasNext = totalPages > 1
 ---
 
 <BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
-  <div class="flex flex-col gap-8">
-    {posts.map(post => (
-      <PostCard post={post} />
-    ))}
+  <div class="flex flex-col gap-4">
+    {pagePosts.map(post => <PostCard post={post} />)}
   </div>
+  {
+    hasNext && (
+      <div class="flex justify-end mt-6 pt-2">
+        <a
+          href="/page/2"
+          class="text-sm text-zinc-500 dark:text-zinc-400 hover:underline"
+        >
+          次のページ →
+        </a>
+      </div>
+    )
+  }
 </BaseLayout>
