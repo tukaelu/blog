@@ -18,7 +18,7 @@ export default function updateCsp(): AstroIntegration {
     name: 'update-csp',
     hooks: {
       'astro:config:done': ({ config }) => {
-        clientDir = config.build.client ?? config.outDir
+        clientDir = config.outDir
       },
       'astro:build:done': async ({ logger }) => {
         const distDir = fileURLToPath(clientDir)

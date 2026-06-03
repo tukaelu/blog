@@ -26,7 +26,7 @@ export default function ogpImages(): AstroIntegration {
     name: 'ogp-images',
     hooks: {
       'astro:config:done': ({ config }) => {
-        clientDir = config.build.client ?? config.outDir
+        clientDir = config.outDir
       },
       'astro:build:done': async ({ logger }) => {
         const distDir = fileURLToPath(clientDir)
