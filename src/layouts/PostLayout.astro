@@ -2,17 +2,20 @@
 import BaseLayout from '@layouts/BaseLayout.astro'
 import PostHeader from '@components/post/PostHeader.astro'
 import RelatedPosts from '@components/post/RelatedPosts.astro'
+import TableOfContents from '@components/post/TableOfContents.astro'
 import { SITE_TITLE } from '@lib/constants'
 import type { Post, EnPost } from '@lib/posts'
 
 interface Props {
   post: Post | EnPost
   lang?: 'ja' | 'en'
+  headings?: { depth: number; slug: string; text: string }[]
 }
 
-const { post, lang = 'ja' } = Astro.props
+const { post, lang = 'ja', headings = [] } = Astro.props
 const { title, slug, description, publishedAt, tags, icon } = post.data
 const pageTitle = `${title} | ${SITE_TITLE}`
+const hasToc = headings.some(h => h.depth === 2 || h.depth === 3)
 ---
 
 <BaseLayout
@@ -22,26 +25,41 @@ const pageTitle = `${title} | ${SITE_TITLE}`
   isArticle={true}
   lang={lang}
 >
-  <div class="max-w-full">
-    <article data-pagefind-body>
-      <PostHeader
-        title={title}
-        slug={slug}
-        publishedAt={publishedAt}
-        tags={tags}
-        icon={icon}
-        lang={lang}
-      />
+  <article data-pagefind-body>
+    <PostHeader
+      title={title}
+      slug={slug}
+      publishedAt={publishedAt}
+      tags={tags}
+      icon={icon}
+      lang={lang}
+    />
 
-      <div class="max-w-full mt-8 prose dark:prose-invert dark:text-zinc-300">
-        <slot />
+    {hasToc && (
+      <div class="xl:hidden mt-6 border border-zinc-200 dark:border-zinc-700 rounded-lg overflow-hidden bg-white/70 backdrop-blur-sm dark:bg-zinc-700/80">
+        <TableOfContents headings={headings} variant="mobile" />
       </div>
+    )}
 
-      <div class="mt-6">
-        <div class="hatena-star" />
-      </div>
-    </article>
-  </div>
+    <div class="max-w-full mt-8 prose dark:prose-invert dark:text-zinc-300">
+      <slot />
+    </div>
+
+    <div class="mt-6">
+      <div class="hatena-star" />
+    </div>
+  </article>
 
   {lang === 'ja' && <RelatedPosts post={post as Post} />}
+
+  {hasToc && (
+    <div
+      class="hidden xl:block fixed top-24 w-60 max-h-[calc(100vh-6rem)] overflow-y-auto z-10"
+      style="left: calc(50vw + 24rem + 1.5rem)"
+    >
+      <div class="border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 bg-white/70 backdrop-blur-sm dark:bg-zinc-700/80">
+        <TableOfContents headings={headings} variant="desktop" />
+      </div>
+    </div>
+  )}
 </BaseLayout>

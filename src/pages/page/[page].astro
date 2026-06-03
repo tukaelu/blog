@@ -1,0 +1,61 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro'
+import PostCard from '@components/post/PostCard.astro'
+import { getListablePosts } from '@lib/posts'
+import { SITE_TITLE, SITE_DESCRIPTION } from '@lib/constants'
+
+const PAGE_SIZE = 5
+
+export async function getStaticPaths() {
+  const PAGE_SIZE = 5
+  const posts = await getListablePosts()
+  const totalPages = Math.ceil(posts.length / PAGE_SIZE)
+
+  return Array.from({ length: Math.max(totalPages - 1, 0) }, (_, i) => ({
+    params: { page: String(i + 2) },
+    props: {
+      pagePosts: posts.slice((i + 1) * PAGE_SIZE, (i + 2) * PAGE_SIZE),
+      currentPage: i + 2,
+      totalPages,
+    },
+  }))
+}
+
+const { pagePosts, currentPage, totalPages } = Astro.props
+const hasPrev = currentPage > 1
+const hasNext = currentPage < totalPages
+const prevHref = currentPage === 2 ? '/' : `/page/${currentPage - 1}`
+---
+
+<BaseLayout
+  title={`${SITE_TITLE} — ページ ${currentPage}`}
+  description={SITE_DESCRIPTION}
+>
+  <div class="flex flex-col gap-4">
+    {pagePosts.map(post => <PostCard post={post} />)}
+  </div>
+  <div class="flex justify-between mt-6 pt-2">
+    {
+      hasPrev ? (
+        <a
+          href={prevHref}
+          class="text-sm text-zinc-500 dark:text-zinc-400 hover:underline"
+        >
+          ← 前のページ
+        </a>
+      ) : (
+        <span />
+      )
+    }
+    {
+      hasNext && (
+        <a
+          href={`/page/${currentPage + 1}`}
+          class="text-sm text-zinc-500 dark:text-zinc-400 hover:underline"
+        >
+          次のページ →
+        </a>
+      )
+    }
+  </div>
+</BaseLayout>

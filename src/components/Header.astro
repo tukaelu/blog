@@ -5,20 +5,32 @@ import ThemeToggle from '@components/ui/ThemeToggle.astro'
 <header
   class="sticky top-0 z-50 border-zinc-200 border-b py-3 backdrop-blur transition-colors dark:border-zinc-600 dark:bg-zinc-800"
 >
-  <div
-    class="mx-auto flex max-w-4xl items-center justify-between px-4 md:px-0"
-  >
-    <a href="/" data-home-link class="hover:underline" aria-label="ホームに戻る">
+  <div class="mx-auto flex max-w-4xl items-center justify-between px-4 md:px-0">
+    <a
+      href="/"
+      data-home-link
+      class="flex items-center gap-2 hover:underline"
+      aria-label="ホームに戻る"
+    >
+      <img
+        src="/assets/tuka-3d.png"
+        alt=""
+        aria-hidden="true"
+        class="h-12 w-12 rounded-full object-cover"
+      />
       <span class="font-bold text-lg dark:text-zinc-400">nsymtks.com</span>
     </a>
     <div class="flex items-center gap-3">
-      {/* <span id="lang-switcher" class="flex items-center gap-1 text-sm"></span> */}
+      {
+        /* <span id="lang-switcher" class="flex items-center gap-1 text-sm"></span> */
+      }
       <ThemeToggle />
     </div>
   </div>
 </header>
 
-{/*
+{
+  /*
 <script>
   const langLabels: Record<string, string> = { ja: 'JA', en: 'EN' }
   const pathname = window.location.pathname
@@ -45,4 +57,5 @@ import ThemeToggle from '@components/ui/ThemeToggle.astro'
       .join('')
   }
 </script>
-*/}
+*/
+}

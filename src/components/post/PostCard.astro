@@ -1,5 +1,6 @@
 ---
-import { formatDate } from '@lib/date'
+import { formatToYMD } from '@lib/date'
+import { calcReadingTime } from '@lib/readingTime'
 import type { Post, EnPost } from '@lib/posts'
 
 interface Props {
@@ -8,21 +9,39 @@ interface Props {
 }
 
 const { post, lang = 'ja' } = Astro.props
-const { title, slug, description, publishedAt } = post.data
+const { title, slug, description, tags, publishedAt } = post.data
 const basePath = lang === 'en' ? '/en/posts' : '/posts'
-const formattedDate = formatDate(publishedAt, lang)
+const href = `${basePath}/${slug}`
+const formattedDate = formatToYMD(publishedAt)
+
+const readingTimeMin = calcReadingTime(post.body ?? '')
+const readMoreLabel = lang === 'en' ? 'Read more →' : '続きを読む →'
 ---
 
-<a href={`${basePath}/${slug}`} class="block group">
-  <div class="flex flex-col gap-2">
-    <span class="text-sm text-gray-500 dark:text-zinc-400">
-      {formattedDate}
-    </span>
-    <h2 class="text-xl font-semibold dark:text-zinc-200 group-hover:underline">
+<article class="bg-white/70 backdrop-blur-sm dark:bg-zinc-700/80 border border-zinc-200 dark:border-zinc-600 rounded-lg px-7 py-7">
+  <a href={href} class="group block">
+    <h2 class="text-xl font-bold dark:text-zinc-100 group-hover:underline leading-snug">
       {title}
     </h2>
-    <p class="text-base text-gray-600 dark:text-zinc-400 line-clamp-2">
-      {description}
-    </p>
+  </a>
+  <div class="flex items-center flex-wrap gap-x-1.5 gap-y-1 text-sm text-gray-500 dark:text-zinc-400 mt-2">
+    <time datetime={formattedDate}>{formattedDate}</time>
+    <span aria-hidden="true">•</span>
+    <span>{readingTimeMin} min read</span>
   </div>
-</a>
+  {tags.length > 0 && (
+    <div class="flex flex-wrap gap-2 mt-3">
+      {tags.map(tag => (
+        <span class="px-3 py-1 text-xs font-bold bg-odwr-200/50 dark:bg-zinc-600 rounded-full text-zinc-700 dark:text-zinc-200">
+          {tag}
+        </span>
+      ))}
+    </div>
+  )}
+  <p class="mt-3 text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed line-clamp-4">
+    {description}
+  </p>
+  <a href={href} class="inline-block mt-3 text-sm font-bold text-zinc-800 dark:text-zinc-200 hover:underline">
+    {readMoreLabel}
+  </a>
+</article>
