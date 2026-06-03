@@ -2,7 +2,6 @@
 import { defineConfig, envField } from 'astro/config'
 
 import mdx from '@astrojs/mdx'
-import cloudflare from '@astrojs/cloudflare'
 import sitemap from '@astrojs/sitemap'
 import UnoCSS from '@unocss/astro'
 import remarkGfm from 'remark-gfm'
@@ -24,7 +23,6 @@ export default defineConfig({
     pagefind(),
     updateCsp(),
   ],
-  adapter: cloudflare(),
   env: {
     schema: {
       PUBLIC_GA_ID: envField.string({
