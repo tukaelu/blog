@@ -21,7 +21,7 @@ importers:
         specifier: ^3.7.3
         version: 3.7.3
       astro:
-        specifier: ^6.4.5
+        specifier: ^6.4.6
         version: 6.4.6(@types/node@24.13.1)(jiti@2.7.0)(rollup@4.61.1)(yaml@2.9.0)
       typescript:
         specifier: ^6.0.3
