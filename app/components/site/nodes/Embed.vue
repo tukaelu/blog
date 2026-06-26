@@ -4,7 +4,6 @@ defineProps<{ provider: string; url: string }>()
 
 <template>
   <SiteNodesEmbedYoutube v-if="provider === 'youtube'" :url="url" />
-  <SiteNodesEmbedMisskey v-else-if="provider === 'misskey'" :url="url" />
   <!-- X/Instagramは外部ウィジェットスクリプトがDOM操作するためクライアント専用 -->
   <ClientOnly v-else-if="provider === 'x'">
     <SiteNodesEmbedX :url="url" />
