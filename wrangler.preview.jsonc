@@ -6,23 +6,20 @@
   "main": "./.output/server/index.mjs",
   "assets": {
     "directory": "./.output/public",
-    // nuxt-og-imageのフォント読み込みに必要。main/assetsは nitro.cloudflare.deployConfig により
-    // ビルド時に .output/server/wrangler.json で上書きされる（architecture.md §10, §11.1参照）
     "binding": "ASSETS",
   },
   "observability": {
     "enabled": true,
   },
-  // database_id は `wrangler d1 create blog-cms-production` 実行後に置き換える
+  // database_id は `wrangler d1 create blog-cms-preview` 実行後に置き換える
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "blog-cms-production",
+      "database_name": "blog-cms-preview",
       "database_id": "00000000-0000-0000-0000-000000000000",
     },
   ],
-  "r2_buckets": [{ "binding": "IMAGES", "bucket_name": "blog-cms-production" }],
-  // いいねAPIの濫用対策（architecture.md §8.2）。同一IPからの連打を制限する
+  "r2_buckets": [{ "binding": "IMAGES", "bucket_name": "blog-cms-preview" }],
   "ratelimits": [
     {
       "name": "LIKE_RATE_LIMITER",
