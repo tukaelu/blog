@@ -20,9 +20,20 @@ interface SearchRow {
 // 列順は article_id(0, UNINDEXED) / title(1) / body_text(2)。snippet()はbody_textから生成する。
 export default defineEventHandler(async event => {
   const { q, page } = await getValidatedQuery(event, querySchema.parse)
-  const db = useDrizzle(event)
   const offset = (page - 1) * LIMIT
   const ftsQuery = buildFtsQuery(q)
+
+  // 空白のみの検索語はbuildFtsQueryで空文字列に落ちる。空のMATCH式はFTS5の構文エラーに
+  // なるため、DBへ問い合わせず0件として返す
+  if (!ftsQuery) {
+    return {
+      query: q,
+      results: [],
+      pagination: { page, totalPages: 1, totalCount: 0 },
+    }
+  }
+
+  const db = useDrizzle(event)
 
   const results = await db.all<SearchRow>(sql`
     SELECT a.slug, a.title, a.published_at,
