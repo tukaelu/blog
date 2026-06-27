@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ArticleDetail } from '#shared/types/article'
-import { SITE_DESCRIPTION } from '#shared/constants'
+import { SITE_DESCRIPTION, SITE_URL } from '#shared/constants'
 
 // Vue Routerは同一ルートレコードへの遷移（記事本文中のリンクで別記事へ移動する等）で
 // コンポーネントインスタンスを再利用するため、keyでslugごとに再マウントさせる。
@@ -39,6 +39,8 @@ const metaDescription = computed(
   () => article.value?.description || SITE_DESCRIPTION
 )
 
+const ogImageUrl = `${SITE_URL}/api/og/${slug}`
+
 useHead(() => ({
   title: article.value?.title,
   meta: [
@@ -46,12 +48,14 @@ useHead(() => ({
     { property: 'og:type', content: 'article' },
     { property: 'og:title', content: article.value?.title },
     { property: 'og:description', content: metaDescription.value },
+    { property: 'og:image', content: ogImageUrl },
+    { property: 'og:image:type', content: 'image/png' },
+    { property: 'og:image:width', content: '1200' },
+    { property: 'og:image:height', content: '630' },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:image', content: ogImageUrl },
   ],
 }))
-
-defineOgImageComponent('BlogPost', {
-  title: computed(() => article.value?.title ?? ''),
-})
 
 // 本文中の脚注参照(Footnote.vue)へ出現順の連番を割り振るための共有カウンター。
 // 同一contentの脚注が複数箇所にあってもcontent文字列ではなく出現順で区別する。

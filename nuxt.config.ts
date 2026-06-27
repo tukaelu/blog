@@ -1,15 +1,13 @@
 import tailwindcss from '@tailwindcss/vite'
+import { unwasm } from 'unwasm/plugin'
+
+const isProductionBuild = process.env.NODE_ENV === 'production'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2026-08-20',
   devtools: { enabled: true },
-  modules: [
-    'nitro-cloudflare-dev',
-    '@nuxt/fonts',
-    'nuxt-og-image',
-    'shadcn-nuxt',
-  ],
+  modules: ['nitro-cloudflare-dev', 'shadcn-nuxt'],
   css: ['~/assets/css/main.css'],
   vite: {
     plugins: [tailwindcss()],
@@ -38,12 +36,11 @@ export default defineNuxtConfig({
   },
   nitro: {
     preset: 'cloudflare_module',
-    // nuxt-og-imageのフォント読み込み（ASSETSバインディング）に必須（architecture.md §10）。
-    // 生成される wrangler.json は env.* を含められないため、プレビュー環境は wrangler.preview.jsonc に分離した（§11.1）。
     cloudflare: { deployConfig: true },
-  },
-  fonts: {
-    // OGP画像の日本語タイトル描画専用。サイト全体のCSSには適用しない（global: false）
-    families: [{ name: 'Noto Sans JP', weights: [700], global: false }],
+    // takumi-rsのwasmバイナリをWranglerにプリコンパイルさせるための静的import（*.wasm?module）を
+    // 有効化する。esmImportはproductionビルドでのみ有効化（architecture.md §10参照）。
+    rollupConfig: {
+      plugins: [unwasm({ esmImport: isProductionBuild, silent: true })],
+    },
   },
 })
