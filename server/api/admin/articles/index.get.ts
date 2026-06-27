@@ -2,7 +2,6 @@ import { z } from 'zod'
 import { count, desc, eq, inArray } from 'drizzle-orm'
 import type { AdminArticleSummary, Pagination } from '#shared/types/article'
 import { articles, likes } from '../../../database/schema'
-import { mediaUrl } from '../../../utils/media'
 
 const querySchema = z.object({
   status: z.enum(['draft', 'published', 'all']).default('all'),
@@ -24,7 +23,7 @@ export default defineEventHandler(async event => {
     orderBy: desc(articles.updatedAt),
     limit,
     offset,
-    with: { articleTags: { with: { tag: true } }, coverImage: true },
+    with: { articleTags: { with: { tag: true } } },
   })
 
   const totalRow = await db
@@ -56,7 +55,6 @@ export default defineEventHandler(async event => {
     updatedAt: row.updatedAt,
     tags: row.articleTags.map(at => at.tag.name),
     characterCount: row.bodyText.length,
-    coverImageUrl: row.coverImage ? mediaUrl(row.coverImage.r2Key) : null,
     likeCount: likeCountById.get(row.id) ?? 0,
   }))
 

@@ -54,7 +54,6 @@ export interface AdminArticleSummary {
   updatedAt: string
   tags: string[]
   characterCount: number
-  coverImageUrl: string | null
   likeCount: number
 }
 
