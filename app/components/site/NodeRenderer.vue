@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { TiptapNode } from '#shared/types/tiptap-nodes'
+import { buildHeadingAnchors } from '#shared/utils/heading-anchor'
 
-const props = defineProps<{ node: TiptapNode }>()
+const props = defineProps<{ node: TiptapNode; anchor?: string }>()
 
 function textContent(node: TiptapNode): string {
   if (node.text) return node.text
@@ -9,6 +10,28 @@ function textContent(node: TiptapNode): string {
 }
 
 const headingTag = computed(() => `h${props.node.attrs?.level ?? 2}`)
+
+// server/utils/toc.tsのbuildTocと同じ入力（文書内の全見出しテキストの出現順配列）から
+// 同じアルゴリズムでアンカーを算出し、doc直下の子へ渡す。これによりTOCのリンク先(#anchor)と
+// 見出しのDOM idが同一テキストの見出しが複数あっても一致し、重複idにならない。
+const headingAnchorByIndex = computed(() => {
+  const map = new Map<number, string>()
+  if (props.node.type !== 'doc') return map
+  const content = props.node.content ?? []
+  const headingIndices: number[] = []
+  const texts: string[] = []
+  content.forEach((child, i) => {
+    if (child.type === 'heading') {
+      headingIndices.push(i)
+      texts.push(textContent(child))
+    }
+  })
+  buildHeadingAnchors(texts).forEach((anchor, j) => {
+    const index = headingIndices[j]
+    if (index !== undefined) map.set(index, anchor)
+  })
+  return map
+})
 </script>
 
 <template>
@@ -18,6 +41,7 @@ const headingTag = computed(() => `h${props.node.attrs?.level ?? 2}`)
       v-for="(child, i) in node.content"
       :key="i"
       :node="child"
+      :anchor="headingAnchorByIndex.get(i)"
     />
   </template>
 
@@ -32,7 +56,7 @@ const headingTag = computed(() => `h${props.node.attrs?.level ?? 2}`)
   <component
     :is="headingTag"
     v-else-if="node.type === 'heading'"
-    :id="textContent(node)"
+    :id="props.anchor ?? textContent(node)"
   >
     <SiteNodeRenderer
       v-for="(child, i) in node.content ?? []"
