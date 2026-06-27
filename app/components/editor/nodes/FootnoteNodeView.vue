@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { NodeViewWrapper } from '@tiptap/vue-3'
 import type { NodeViewProps } from '@tiptap/vue-3'
+import { Trash2Icon } from '@lucide/vue'
 
 const props = defineProps<NodeViewProps>()
 
@@ -19,8 +20,14 @@ function onInput(e: Event) {
         :value="node.attrs.content"
         placeholder="脚注の内容"
         style="width: 12em"
-        @input="onInput"
-      />]</template
-    >
+        @input="onInput" />]<Button
+        type="button"
+        variant="ghost"
+        size="icon-xs"
+        title="削除"
+        class="ml-1 align-middle"
+        @click="deleteNode"
+        ><Trash2Icon class="size-3" /></Button
+    ></template>
   </NodeViewWrapper>
 </template>

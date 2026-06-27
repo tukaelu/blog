@@ -6,11 +6,9 @@ import Image from '@tiptap/extension-image'
 import Placeholder from '@tiptap/extension-placeholder'
 import {
   BoldIcon,
-  CameraIcon,
   CircleHelpIcon,
   Code2Icon,
   CornerDownLeftIcon,
-  GitBranchIcon,
   Heading2Icon,
   Heading3Icon,
   Heading4Icon,
@@ -21,14 +19,13 @@ import {
   ListOrderedIcon,
   PlusIcon,
   QuoteIcon,
-  SquarePlayIcon,
   SuperscriptIcon,
   WorkflowIcon,
-  XIcon,
 } from '@lucide/vue'
 import { LinkCard } from './nodes/link-card'
 import { Footnote } from './nodes/footnote'
 import { Embed } from './nodes/embed'
+import { embedProviders } from './nodes/embed-providers'
 import { CodeBlockWithFilepath } from './nodes/code-block'
 import { Mermaid } from './nodes/mermaid'
 import AdminMediaPickerModal from '~/components/admin/MediaPickerModal.vue'
@@ -62,13 +59,6 @@ const mediaPickerRef = ref<InstanceType<typeof AdminMediaPickerModal>>()
 function onImageSelected(item: { url: string }) {
   editor.value?.chain().focus().setImage({ src: item.url }).run()
 }
-
-const embedProviders = [
-  { provider: 'github', label: 'GitHub埋め込み', icon: GitBranchIcon },
-  { provider: 'youtube', label: 'YouTube埋め込み', icon: SquarePlayIcon },
-  { provider: 'x', label: 'X埋め込み', icon: XIcon },
-  { provider: 'instagram', label: 'Instagram埋め込み', icon: CameraIcon },
-]
 
 function insertLinkCard() {
   editor.value

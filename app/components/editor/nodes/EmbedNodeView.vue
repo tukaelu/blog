@@ -1,8 +1,14 @@
 <script setup lang="ts">
 import { NodeViewWrapper } from '@tiptap/vue-3'
 import type { NodeViewProps } from '@tiptap/vue-3'
+import { embedProviders } from './embed-providers'
+import NodeEditRow from './NodeEditRow.vue'
 
 const props = defineProps<NodeViewProps>()
+
+const providerInfo = computed(() =>
+  embedProviders.find(p => p.provider === props.node.attrs.provider)
+)
 
 function onInput(e: Event) {
   props.updateAttributes({ url: (e.target as HTMLInputElement).value })
@@ -16,9 +22,13 @@ function onInput(e: Event) {
       :provider="node.attrs.provider"
       :url="node.attrs.url"
     />
-    <template v-else>
-      <span>{{ node.attrs.provider }}埋め込み:</span>
-      <input :value="node.attrs.url" placeholder="URL" @input="onInput" />
-    </template>
+    <NodeEditRow v-else :icon="providerInfo?.icon" @delete="deleteNode">
+      <input
+        :value="node.attrs.url"
+        :placeholder="providerInfo ? `${providerInfo.label}のURL` : 'URL'"
+        class="w-full"
+        @input="onInput"
+      />
+    </NodeEditRow>
   </NodeViewWrapper>
 </template>
