@@ -53,7 +53,31 @@ const bodyJson = ref<TiptapNode>(
 )
 
 const saveState = ref<'idle' | 'saving' | 'saved' | 'error'>('idle')
+const saveErrorMessage = ref<string | null>(null)
 const explicitSaving = ref(false)
+
+// サーバーのarticleInputSchema（公開時のdescription/publishedAt必須チェック等）が
+// 返すZodErrorのpathから、ユーザーに原因が伝わる短いメッセージへ変換する。
+// 未知のエラーはnullを返し、汎用メッセージにフォールバックさせる。
+function extractValidationMessage(err: unknown): string | null {
+  const raw = (err as { data?: { data?: { message?: string } } })?.data?.data
+    ?.message
+  if (!raw) return null
+  try {
+    const issues = JSON.parse(raw) as { path: string[] }[]
+    if (issues.some(issue => issue.path.includes('description'))) {
+      settingsOpen.value = true
+      return '概要文が未入力です。公開するには概要文の入力が必要です'
+    }
+    if (issues.some(issue => issue.path.includes('publishedAt'))) {
+      settingsOpen.value = true
+      return '公開日時が未設定です'
+    }
+  } catch {
+    return null
+  }
+  return null
+}
 
 function currentTagNames(): string[] {
   return tagNamesText.value
@@ -103,6 +127,7 @@ function triggerAutosave() {
 async function doAutosave() {
   const id = await ensureCreated()
   saveState.value = 'saving'
+  saveErrorMessage.value = null
   try {
     await $fetch(`/api/admin/articles/${id}/autosave`, {
       method: 'PATCH',
@@ -124,6 +149,7 @@ async function saveExplicit(newStatus: 'draft' | 'published') {
   if (debounceTimer) clearTimeout(debounceTimer)
   const id = await ensureCreated()
   explicitSaving.value = true
+  saveErrorMessage.value = null
   try {
     await $fetch(`/api/admin/articles/${id}`, {
       method: 'PUT',
@@ -143,8 +169,9 @@ async function saveExplicit(newStatus: 'draft' | 'published') {
     })
     status.value = newStatus
     saveState.value = 'saved'
-  } catch {
+  } catch (err) {
     saveState.value = 'error'
+    saveErrorMessage.value = extractValidationMessage(err)
   } finally {
     explicitSaving.value = false
   }
@@ -195,9 +222,9 @@ onBeforeUnmount(() => {
             class="size-3.5"
           />
           <template v-if="saveState === 'saving'">保存中…</template>
-          <template v-else-if="saveState === 'error'"
-            >保存に失敗しました</template
-          >
+          <template v-else-if="saveState === 'error'">{{
+            saveErrorMessage ?? '保存に失敗しました'
+          }}</template>
           <template v-else>保存済み</template>
         </span>
       </div>
