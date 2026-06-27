@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm'
+import { eq, inArray } from 'drizzle-orm'
 import type { ArticleTag } from '#shared/types/article'
 import { slugifyTagName } from '#shared/utils/slug'
 import type { AppDatabase } from './db'
@@ -18,29 +18,34 @@ export async function resolveTagIds(
   db: AppDatabase,
   tagNames: string[]
 ): Promise<string[]> {
-  const ids: string[] = []
-  const seen = new Set<string>()
-  for (const raw of tagNames) {
-    const name = raw.trim()
-    // 同名タグが重複入力された場合、article_tagsへ同じ(articleId, tagId)を
-    // 2回INSERTしようとして複合PRIMARY KEY違反になるため、ここで弾く
-    if (!name || seen.has(name)) continue
-    seen.add(name)
-    // SELECTしてから未存在時のみINSERTする方式は、同名タグの同時作成で
-    // UNIQUE制約違反による生エラーになるレースがあるため、
-    // INSERT ... ON CONFLICT DO NOTHING（name一致時のみ）+ 再SELECTで冪等に解決する。
-    await db
+  // 同名タグが重複入力された場合、article_tagsへ同じ(articleId, tagId)を
+  // 2回INSERTしようとして複合PRIMARY KEY違反になるため、ここで弾く
+  const names = [...new Set(tagNames.map(raw => raw.trim()).filter(Boolean))]
+  if (!names.length) return []
+
+  // タグ数ぶんSELECT→INSERTを逐次実行すると記事保存のたびに最大2N回のD1
+  // ラウンドトリップが発生するため、INSERTをbatch()でまとめて1回、
+  // IDの解決も1回のSELECTにまとめる。
+  // SELECTしてから未存在時のみINSERTする方式は、同名タグの同時作成で
+  // UNIQUE制約違反による生エラーになるレースがあるため、
+  // INSERT ... ON CONFLICT DO NOTHING（name一致時のみ）+ 再SELECTで冪等に解決する。
+  const inserts = names.map(name =>
+    db
       .insert(tags)
       .values({ id: crypto.randomUUID(), name, slug: slugifyTagName(name) })
       .onConflictDoNothing({ target: tags.name })
-    const row = await db
-      .select({ id: tags.id })
-      .from(tags)
-      .where(eq(tags.name, name))
-      .get()
-    if (row) ids.push(row.id)
-  }
-  return ids
+  )
+  await db.batch(inserts as [(typeof inserts)[number], ...typeof inserts])
+
+  const rows = await db
+    .select({ id: tags.id, name: tags.name })
+    .from(tags)
+    .where(inArray(tags.name, names))
+  const idByName = new Map(rows.map(row => [row.name, row.id]))
+
+  return names
+    .map(name => idByName.get(name))
+    .filter((id): id is string => !!id)
 }
 
 export async function replaceArticleTags(
