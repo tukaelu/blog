@@ -29,5 +29,12 @@
       "namespace_id": "1001",
       "simple": { "limit": 10, "period": 60 },
     },
+    // og-fetchは未認証で任意URLをfetchするエンドポイントのため、オープンプロキシ的な
+    // 濫用・サーバー自体への負荷攻撃を防ぐため同一IPからの連打を制限する
+    {
+      "name": "OG_FETCH_RATE_LIMITER",
+      "namespace_id": "1002",
+      "simple": { "limit": 20, "period": 60 },
+    },
   ],
 }
