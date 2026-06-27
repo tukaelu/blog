@@ -10,6 +10,7 @@ import {
   MoreVerticalIcon,
   PencilLineIcon,
   SearchIcon,
+  SquarePenIcon,
 } from '@lucide/vue'
 import type {
   AdminArticleDetail,
@@ -126,18 +127,24 @@ async function setDraft(article: AdminArticleSummary) {
     <header
       class="sticky top-0 z-10 flex items-center justify-end gap-1 bg-background/90 px-4 py-3 backdrop-blur"
     >
-      <Button as-child variant="ghost" size="icon-sm" title="メディア">
-        <NuxtLink to="/admin/media"><ImageIcon class="size-4" /></NuxtLink>
-      </Button>
       <SiteThemeToggle />
     </header>
 
     <div class="mx-auto flex w-full max-w-5xl flex-col gap-6 px-6 pt-4 pb-10">
       <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold">記事一覧</h1>
-        <Button as-child>
-          <NuxtLink to="/admin/articles/new">新規作成</NuxtLink>
-        </Button>
+        <div class="flex items-center gap-2">
+          <Button as-child variant="outline">
+            <NuxtLink to="/admin/media"
+              ><ImageIcon class="size-4" />メディア</NuxtLink
+            >
+          </Button>
+          <Button as-child>
+            <NuxtLink to="/admin/articles/new"
+              ><SquarePenIcon class="size-4" />書く</NuxtLink
+            >
+          </Button>
+        </div>
       </div>
 
       <div class="flex flex-wrap items-center gap-2">
@@ -185,37 +192,40 @@ async function setDraft(article: AdminArticleSummary) {
       </p>
       <template v-else>
         <div class="overflow-hidden rounded-lg border">
-          <Table>
+          <Table class="table-fixed">
             <TableHeader>
               <TableRow class="bg-muted/50 hover:bg-muted/50">
-                <TableHead class="w-16">OGP</TableHead>
                 <TableHead>タイトル</TableHead>
-                <TableHead>ステータス</TableHead>
-                <TableHead>タグ</TableHead>
-                <TableHead class="text-right">文字数</TableHead>
-                <TableHead class="text-right">いいね</TableHead>
-                <TableHead>公開日</TableHead>
-                <TableHead>更新日</TableHead>
+                <TableHead class="w-28">ステータス</TableHead>
+                <TableHead class="w-20 text-right">文字数</TableHead>
+                <TableHead class="w-20 text-right">いいね</TableHead>
+                <TableHead class="w-24">公開日</TableHead>
+                <TableHead class="w-24">更新日</TableHead>
                 <TableHead class="w-10" />
               </TableRow>
             </TableHeader>
             <TableBody>
               <TableRow v-for="article in visibleArticles" :key="article.id">
-                <TableCell>
-                  <img
-                    v-if="article.coverImageUrl"
-                    :src="article.coverImageUrl"
-                    alt=""
-                    class="h-10 w-16 rounded object-cover"
-                  />
-                  <div v-else class="h-10 w-16 rounded bg-muted" />
-                </TableCell>
                 <TableCell class="font-medium">
-                  <NuxtLink
-                    :to="`/admin/articles/${article.id}`"
-                    class="hover:underline"
-                    >{{ article.title || '無題の記事' }}</NuxtLink
-                  >
+                  <div class="flex flex-col gap-1">
+                    <NuxtLink
+                      :to="`/admin/articles/${article.id}`"
+                      class="block truncate hover:underline"
+                      >{{ article.title || '無題の記事' }}</NuxtLink
+                    >
+                    <div
+                      v-if="article.tags.length"
+                      class="flex flex-wrap gap-1"
+                    >
+                      <Badge
+                        v-for="tag in article.tags"
+                        :key="tag"
+                        variant="secondary"
+                        class="h-4 px-1.5 text-[10px] font-normal"
+                        >#{{ tag }}</Badge
+                      >
+                    </div>
+                  </div>
                 </TableCell>
                 <TableCell>
                   <Badge variant="outline" class="gap-1 font-normal">
@@ -235,27 +245,16 @@ async function setDraft(article: AdminArticleSummary) {
                     }}
                   </Badge>
                 </TableCell>
-                <TableCell>
-                  <div class="flex flex-wrap gap-1">
-                    <Badge
-                      v-for="tag in article.tags"
-                      :key="tag"
-                      variant="secondary"
-                      class="font-normal"
-                      >#{{ tag }}</Badge
-                    >
-                  </div>
-                </TableCell>
-                <TableCell class="text-right text-muted-foreground">{{
+                <TableCell class="text-right text-xs text-muted-foreground">{{
                   article.characterCount.toLocaleString()
                 }}</TableCell>
-                <TableCell class="text-right text-muted-foreground">{{
+                <TableCell class="text-right text-xs text-muted-foreground">{{
                   article.likeCount.toLocaleString()
                 }}</TableCell>
-                <TableCell class="text-muted-foreground">{{
+                <TableCell class="text-xs text-muted-foreground">{{
                   formatDate(article.publishedAt)
                 }}</TableCell>
-                <TableCell class="text-muted-foreground">{{
+                <TableCell class="text-xs text-muted-foreground">{{
                   formatDate(article.updatedAt)
                 }}</TableCell>
                 <TableCell>

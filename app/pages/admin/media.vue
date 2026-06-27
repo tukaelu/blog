@@ -10,7 +10,7 @@ interface MediaItem {
   createdAt: string
 }
 
-// 記事一覧ページと同じ構造の全幅ヘッダー（アイコンのみ、罫線なし）に統一する
+// 記事一覧ページと同じく共通ナビゲーションヘッダーを持たず、見出し行に切り替えボタンを添える構成にする
 definePageMeta({ layout: false })
 
 const { data, refresh } = await useFetch<{ media: MediaItem[] }>(
@@ -62,16 +62,18 @@ async function remove(id: string) {
     <header
       class="sticky top-0 z-10 flex items-center justify-end gap-1 bg-background/90 px-4 py-3 backdrop-blur"
     >
-      <Button as-child variant="ghost" size="icon-sm" title="記事一覧">
-        <NuxtLink to="/admin/articles"
-          ><FileTextIcon class="size-4"
-        /></NuxtLink>
-      </Button>
       <SiteThemeToggle />
     </header>
 
     <div class="mx-auto flex w-full max-w-5xl flex-col gap-6 px-6 pt-4 pb-10">
-      <h1 class="text-2xl font-bold">メディアライブラリ</h1>
+      <div class="flex items-center justify-between">
+        <h1 class="text-2xl font-bold">メディアライブラリ</h1>
+        <Button as-child variant="outline">
+          <NuxtLink to="/admin/articles"
+            ><FileTextIcon class="size-4" />記事一覧</NuxtLink
+          >
+        </Button>
+      </div>
 
       <Card>
         <CardContent class="flex flex-col gap-3">
