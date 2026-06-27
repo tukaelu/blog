@@ -17,7 +17,7 @@ defineProps<{ items: FootnoteItem[] }>()
         :key="item.number"
         class="text-zinc-600 dark:text-zinc-300"
       >
-        {{ item.content }}
+        [{{ item.number }}] {{ item.content }}
         <a
           :href="`#footnote-ref-${item.number}`"
           class="text-zinc-500 hover:underline dark:text-zinc-400"
