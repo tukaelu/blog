@@ -6,7 +6,10 @@ import { articles, likes } from '../../../database/schema'
 const querySchema = z.object({
   status: z.enum(['draft', 'published', 'all']).default('all'),
   page: z.coerce.number().int().min(1).default(1),
-  limit: z.coerce.number().int().min(1).max(100).default(20),
+  // 管理画面の記事一覧はフィルタ・検索・ソート・ページングを全件クライアント側で行う設計
+  // （app/pages/admin/articles/index.vue）。上限を超えると古い記事がどのページ操作でも
+  // 見えなくなるため、個人ブログ規模で十分な値にしておく
+  limit: z.coerce.number().int().min(1).max(1000).default(20),
 })
 
 export default defineEventHandler(async event => {

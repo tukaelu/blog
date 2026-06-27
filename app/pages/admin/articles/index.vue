@@ -38,7 +38,7 @@ const statusIcon: Record<DisplayStatus, unknown> = {
 const { data, refresh } = await useFetch<{
   articles: AdminArticleSummary[]
   pagination: Pagination
-}>('/api/admin/articles', { query: { status: 'all', limit: 100 } })
+}>('/api/admin/articles', { query: { status: 'all', limit: 1000 } })
 
 const articles = computed(() => data.value?.articles ?? [])
 
