@@ -12,8 +12,7 @@
   --color-odwr-100: #bce3e2;
   --color-odwr-200: #99d8d7;
   --color-odwr-300: #77cdcc;
-  --font-sans:
-    'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+  --font-sans: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
 }
 
 @theme inline {
