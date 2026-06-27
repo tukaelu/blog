@@ -16,6 +16,9 @@ const [mark, ...rest] = props.marks
   <code v-else-if="mark.type === 'code'"
     ><SiteMarkedText :text="text" :marks="rest"
   /></code>
+  <s v-else-if="mark.type === 'strike'"
+    ><SiteMarkedText :text="text" :marks="rest"
+  /></s>
   <a
     v-else-if="mark.type === 'link'"
     :href="String(mark.attrs?.href ?? '')"
