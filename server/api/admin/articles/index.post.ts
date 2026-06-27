@@ -1,18 +1,8 @@
-import { eq } from 'drizzle-orm'
 import { articles } from '../../../database/schema'
 
 export default defineEventHandler(async event => {
   const input = await readValidatedBody(event, articleInputSchema.parse)
   const db = useDrizzle(event)
-
-  const existing = await db
-    .select({ id: articles.id })
-    .from(articles)
-    .where(eq(articles.slug, input.slug))
-    .get()
-  if (existing) {
-    throw createError({ statusCode: 409, statusMessage: 'slug already exists' })
-  }
 
   const id = crypto.randomUUID()
   const now = new Date().toISOString()
@@ -20,19 +10,29 @@ export default defineEventHandler(async event => {
   const bodyText = extractPlainText(input.bodyJson)
   const tagIds = await resolveTagIds(db, input.tagNames)
 
-  await db.insert(articles).values({
-    id,
-    slug: input.slug,
-    title: input.title,
-    description: input.description ?? null,
-    bodyJson: bodyJsonStr,
-    bodyText,
-    coverImageId: input.coverImageId ?? null,
-    status: input.status,
-    publishedAt: input.publishedAt ?? null,
-    createdAt: now,
-    updatedAt: now,
-  })
+  try {
+    await db.insert(articles).values({
+      id,
+      slug: input.slug,
+      title: input.title,
+      description: input.description ?? null,
+      bodyJson: bodyJsonStr,
+      bodyText,
+      coverImageId: input.coverImageId ?? null,
+      status: input.status,
+      publishedAt: input.publishedAt ?? null,
+      createdAt: now,
+      updatedAt: now,
+    })
+  } catch (err) {
+    if (isUniqueConstraintError(err)) {
+      throw createError({
+        statusCode: 409,
+        statusMessage: 'slug already exists',
+      })
+    }
+    throw err
+  }
 
   await replaceArticleTags(db, id, tagIds)
   await indexArticle(db, id, input.title, bodyText)

@@ -1,4 +1,4 @@
-import { and, eq, ne } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import { articles } from '../../../../database/schema'
 
 export default defineEventHandler(async event => {
@@ -15,34 +15,35 @@ export default defineEventHandler(async event => {
     throw createError({ statusCode: 404, statusMessage: 'Article not found' })
   }
 
-  const slugOwner = await db
-    .select({ id: articles.id })
-    .from(articles)
-    .where(and(eq(articles.slug, input.slug), ne(articles.id, id)))
-    .get()
-  if (slugOwner) {
-    throw createError({ statusCode: 409, statusMessage: 'slug already exists' })
-  }
-
   const now = new Date().toISOString()
   const bodyJsonStr = JSON.stringify(input.bodyJson)
   const bodyText = extractPlainText(input.bodyJson)
   const tagIds = await resolveTagIds(db, input.tagNames)
 
-  await db
-    .update(articles)
-    .set({
-      slug: input.slug,
-      title: input.title,
-      description: input.description ?? null,
-      bodyJson: bodyJsonStr,
-      bodyText,
-      coverImageId: input.coverImageId ?? null,
-      status: input.status,
-      publishedAt: input.publishedAt ?? null,
-      updatedAt: now,
-    })
-    .where(eq(articles.id, id))
+  try {
+    await db
+      .update(articles)
+      .set({
+        slug: input.slug,
+        title: input.title,
+        description: input.description ?? null,
+        bodyJson: bodyJsonStr,
+        bodyText,
+        coverImageId: input.coverImageId ?? null,
+        status: input.status,
+        publishedAt: input.publishedAt ?? null,
+        updatedAt: now,
+      })
+      .where(eq(articles.id, id))
+  } catch (err) {
+    if (isUniqueConstraintError(err)) {
+      throw createError({
+        statusCode: 409,
+        statusMessage: 'slug already exists',
+      })
+    }
+    throw err
+  }
 
   await replaceArticleTags(db, id, tagIds)
   await indexArticle(db, id, input.title, bodyText)
