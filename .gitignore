@@ -37,3 +37,8 @@ worker-configuration.d.ts
 
 # 既存記事移行スクリプト（scripts/migrate-posts.ts）のdry-run出力
 scripts/.migration-output/
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/

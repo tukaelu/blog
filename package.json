@@ -15,6 +15,8 @@
     "postinstall": "nuxt prepare",
     "check": "nuxi typecheck",
     "test:unit": "vitest run",
+    "test:e2e": "wrangler d1 migrations apply blog-cms-production --local && pnpm seed:e2e && playwright test",
+    "seed:e2e": "vite-node --config vitest.config.ts scripts/seed-test-data.ts --",
     "fmt": "prettier --write .",
     "fmt:check": "prettier --check .",
     "cf-typegen": "wrangler types",
@@ -56,6 +58,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^26.3.0",
