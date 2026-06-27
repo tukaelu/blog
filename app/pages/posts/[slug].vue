@@ -95,7 +95,7 @@ const { likeCount, liked, pending, rateLimited, failed, like } = useLike(
 
     <div
       v-if="article.toc.length"
-      class="mt-6 overflow-hidden rounded-lg border border-zinc-200 bg-white/70 backdrop-blur-sm dark:border-zinc-700 dark:bg-zinc-700/80"
+      class="mt-6 overflow-hidden rounded-lg border border-zinc-200 bg-white/70 backdrop-blur-sm xl:hidden dark:border-zinc-700 dark:bg-zinc-700/80"
     >
       <SiteTableOfContents :items="article.toc" />
     </div>
@@ -104,6 +104,18 @@ const { likeCount, liked, pending, rateLimited, failed, like } = useLike(
       <SiteNodeRenderer :node="article.bodyJson" />
     </div>
     <SiteFootnoteList :items="article.footnotes" />
+
+    <div
+      v-if="article.toc.length"
+      class="fixed top-24 z-10 hidden max-h-[calc(100vh-6rem)] w-60 overflow-y-auto xl:block"
+      style="left: calc(50vw + 24rem + 1.5rem)"
+    >
+      <div
+        class="rounded-lg border border-zinc-200 bg-white/70 backdrop-blur-sm dark:border-zinc-700 dark:bg-zinc-700/80"
+      >
+        <SiteTableOfContents :items="article.toc" />
+      </div>
+    </div>
 
     <div class="mt-6 flex flex-col items-start gap-2">
       <button
