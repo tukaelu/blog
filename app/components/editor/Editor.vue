@@ -6,17 +6,25 @@ import Image from '@tiptap/extension-image'
 import Placeholder from '@tiptap/extension-placeholder'
 import {
   BoldIcon,
+  CameraIcon,
   CircleHelpIcon,
   Code2Icon,
+  CornerDownLeftIcon,
+  GitBranchIcon,
   Heading2Icon,
   Heading3Icon,
   Heading4Icon,
   ImageIcon,
   ItalicIcon,
+  LinkIcon,
   ListIcon,
   ListOrderedIcon,
   PlusIcon,
   QuoteIcon,
+  SquarePlayIcon,
+  SuperscriptIcon,
+  WorkflowIcon,
+  XIcon,
 } from '@lucide/vue'
 import { LinkCard } from './nodes/link-card'
 import { Footnote } from './nodes/footnote'
@@ -56,10 +64,10 @@ function onImageSelected(item: { url: string }) {
 }
 
 const embedProviders = [
-  { provider: 'github', label: 'GitHub埋め込み' },
-  { provider: 'youtube', label: 'YouTube埋め込み' },
-  { provider: 'x', label: 'X埋め込み' },
-  { provider: 'instagram', label: 'Instagram埋め込み' },
+  { provider: 'github', label: 'GitHub埋め込み', icon: GitBranchIcon },
+  { provider: 'youtube', label: 'YouTube埋め込み', icon: SquarePlayIcon },
+  { provider: 'x', label: 'X埋め込み', icon: XIcon },
+  { provider: 'instagram', label: 'Instagram埋め込み', icon: CameraIcon },
 ]
 
 function insertLinkCard() {
@@ -242,25 +250,27 @@ onBeforeUnmount(() => editor.value?.destroy())
               <PlusIcon class="size-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent side="top" align="start">
-            <DropdownMenuItem @click="insertLinkCard"
-              >リンクカード</DropdownMenuItem
-            >
-            <DropdownMenuItem @click="insertFootnote">脚注</DropdownMenuItem>
+          <DropdownMenuContent side="top" align="start" class="w-48">
+            <DropdownMenuItem @click="insertLinkCard">
+              <LinkIcon class="size-4" />リンクカード
+            </DropdownMenuItem>
+            <DropdownMenuItem @click="insertFootnote">
+              <SuperscriptIcon class="size-4" />脚注
+            </DropdownMenuItem>
             <DropdownMenuItem
               v-for="item in embedProviders"
               :key="item.provider"
               @click="insertEmbed(item.provider)"
             >
-              {{ item.label }}
+              <component :is="item.icon" class="size-4" />{{ item.label }}
             </DropdownMenuItem>
-            <DropdownMenuItem @click="insertMermaid"
-              >Mermaid図表</DropdownMenuItem
-            >
+            <DropdownMenuItem @click="insertMermaid">
+              <WorkflowIcon class="size-4" />Mermaid図表
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem @click="insertHardBreak"
-              >改行（段落を変えない）</DropdownMenuItem
-            >
+            <DropdownMenuItem @click="insertHardBreak">
+              <CornerDownLeftIcon class="size-4" />改行（段落を変えない）
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <Button
