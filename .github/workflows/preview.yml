@@ -35,7 +35,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: versions upload --message "Deployed preview pages by GitHub Actions branch ${{ github.ref_name }}"
 
-      - uses: marocchino/sticky-pull-request-comment@0ea0beb66eb9baf113663a64ec522f60e49231c0 # v3.0.4
+      - uses: marocchino/sticky-pull-request-comment@5770ad5eb8f42dd2c4f34da00c94c5381e49af88 # v3.0.5
         if: >-
           ${{ steps.deploy-workers-preview.outcome == 'success' }}
         with:
