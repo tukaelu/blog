@@ -43,7 +43,7 @@
     "prettier": "3.9.6",
     "rehype-pretty-code": "0.14.5",
     "remark-gfm": "4.0.1",
-    "satori": "0.29.0",
+    "satori": "0.29.1",
     "shiki": "4.4.3",
     "unocss": "66.7.5"
   }
