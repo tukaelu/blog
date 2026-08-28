@@ -44,6 +44,7 @@ const coverPickerRef = ref<InstanceType<typeof AdminMediaPickerModal>>()
 function onCoverImageSelected(item: { id: string; url: string }) {
   coverImageId.value = item.id
   coverImageUrl.value = item.url
+  triggerAutosave()
 }
 // content: [] だと段落ノードが1つも無いDOMになり、Placeholder拡張の
 // `:first-child`セレクタが当たる要素が無くプレースホルダーが出せないため、
@@ -90,6 +91,7 @@ function currentTagNames(): string[] {
 // （spec-article-editing.md §6.1: タイトル/本文への最初の変更をトリガーに自動保存相当でidを発行する）。
 // ダブルクリックや自動保存との競合で二重作成しないよう、実行中のPromiseを共有する。
 let creatingPromise: Promise<string> | null = null
+let isUnmounted = false
 async function ensureCreated(): Promise<string> {
   if (articleId.value) return articleId.value
   if (creatingPromise) return creatingPromise
@@ -107,7 +109,9 @@ async function ensureCreated(): Promise<string> {
       },
     })
     articleId.value = res.id
-    router.replace(`/admin/articles/${res.id}`)
+    // POST中にユーザーが既に画面を離れていた場合、離脱先のページから
+    // 作成直後の編集画面へ強制的に引き戻さない
+    if (!isUnmounted) router.replace(`/admin/articles/${res.id}`)
     return res.id
   })()
   try {
@@ -118,10 +122,17 @@ async function ensureCreated(): Promise<string> {
 }
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
+// 発火済みで実行中のautosaveリクエストへの参照。debounceTimerのclearTimeoutは
+// 未発火のタイマーしか止められないため、これを別途保持してsaveExplicitから待ち合わせる
+let autosaveInFlight: Promise<void> | null = null
 
 function triggerAutosave() {
   if (debounceTimer) clearTimeout(debounceTimer)
-  debounceTimer = setTimeout(doAutosave, 3000)
+  debounceTimer = setTimeout(() => {
+    autosaveInFlight = doAutosave().finally(() => {
+      autosaveInFlight = null
+    })
+  }, 3000)
 }
 
 async function doAutosave() {
@@ -135,6 +146,11 @@ async function doAutosave() {
         title: title.value,
         description: description.value || null,
         bodyJson: bodyJson.value,
+        // slugは空文字だとバリデーションエラーになるため未入力時は送らない
+        ...(slug.value ? { slug: slug.value } : {}),
+        tagNames: currentTagNames(),
+        coverImageId: coverImageId.value || null,
+        publishedAt: toIsoOrNull(publishedAt.value),
       },
     })
     saveState.value = 'saved'
@@ -144,9 +160,11 @@ async function doAutosave() {
 }
 
 async function saveExplicit(newStatus: 'draft' | 'published') {
-  // 保留中のautosaveをそのままにすると、明示保存の直後に古い内容でPATCHが飛び、
-  // 成功直後に「保存に失敗しました」等saveStateを不整合に上書きしうるため止める
+  // 保留中（未発火）のautosaveタイマーはキャンセルする。既に発火し実行中の
+  // autosaveリクエストがあれば、その完了を待ってから明示保存を送ることで、
+  // 古い内容のPATCHが明示保存の後に遅れて届いて上書きする競合を防ぐ
   if (debounceTimer) clearTimeout(debounceTimer)
+  if (autosaveInFlight) await autosaveInFlight
   const id = await ensureCreated()
   explicitSaving.value = true
   saveErrorMessage.value = null
@@ -198,6 +216,7 @@ function onTitleEnter(event: KeyboardEvent) {
 }
 
 onBeforeUnmount(() => {
+  isUnmounted = true
   if (debounceTimer) clearTimeout(debounceTimer)
 })
 </script>
@@ -305,12 +324,16 @@ onBeforeUnmount(() => {
         <div class="flex flex-col gap-4">
           <div class="flex flex-col gap-1.5">
             <Label>スラッグ</Label>
-            <Input v-model="slug" placeholder="スラッグ（例: my-post）" />
+            <Input
+              v-model="slug"
+              placeholder="スラッグ（例: my-post）"
+              @blur="triggerAutosave"
+            />
           </div>
 
           <div class="flex flex-col gap-1.5">
             <Label>タグ（カンマ区切り）</Label>
-            <Input v-model="tagNamesText" />
+            <Input v-model="tagNamesText" @blur="triggerAutosave" />
           </div>
 
           <div class="flex flex-col gap-1.5">
@@ -350,7 +373,11 @@ onBeforeUnmount(() => {
 
           <div class="flex flex-col gap-1.5">
             <Label>公開日時</Label>
-            <Input v-model="publishedAt" type="datetime-local" />
+            <Input
+              v-model="publishedAt"
+              type="datetime-local"
+              @blur="triggerAutosave"
+            />
           </div>
         </div>
       </DialogContent>
