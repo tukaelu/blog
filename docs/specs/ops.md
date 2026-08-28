@@ -1,6 +1,6 @@
 # 機能仕様書：認証・バックアップ・開発環境（運用基盤）
 
-最終更新: 2026-08-25
+最終更新: 2026-08-28
 関連ドキュメント: `requirements.md`（§6.3, §6.4, §6.6）, `architecture.md`（§7, §11, §13, §14）
 
 ---
@@ -30,7 +30,7 @@ Cloudflare Zero Trustダッシュボードで新規アプリケーションを�
 
 ### 3.2 認証方法・アクセスポリシー（確定）
 
-- IdPはGoogleアカウントと連携する
+- IdPはCloudflareアカウントログイン（One-time PIN等の標準認証）を使う。Google連携等の外部IdPは導入しない（2026-08-28変更、運用の単純さを優先）
 - アクセスポリシーは「特定のメールアドレス（運営者本人）のみ許可」とする単純な許可リスト方式とする
 - セッション有効期間は24時間とする
 
@@ -185,7 +185,7 @@ Workersの`ctx.waitUntil()`を用いて、レスポンス送信後にバック�
 | ローカルでの認証                      | 無条件にバイパスする                                                                                                                                     |
 | プレビュー環境のデータ分離            | 本番と別のD1・R2・APIキーを使用する                                                                                                                      |
 | プレビュー環境の認証保護              | 公開ページを含めた全体をCloudflare Accessで保護する（Worker単位のAccessポリシー、「プレビューデプロイのみ」スコープを使用）                              |
-| Cloudflare AccessのIdP                | Googleアカウント                                                                                                                                         |
+| Cloudflare AccessのIdP                | Cloudflareアカウントログイン（2026-08-28変更、当初案はGoogleアカウント連携だったが運用の単純さを優先しユーザー判断で変更）                              |
 | Cloudflare Accessのセッション有効期間 | 24時間                                                                                                                                                   |
 | Backblaze B2導入検討のトリガー        | R2の容量が1GBを超えたら検討を開始する                                                                                                                    |
 | 監視・可観測性の方式                  | OpenTelemetry（`@microlabs/otel-cf-workers`）でMackerelへエクスポートする。エンドポイントはOTLP/HTTP版（`https://otlp-vaxila.mackerelio.com`）を使用する |
