@@ -54,7 +54,9 @@ const bodyJson = ref<TiptapNode>(
   props.initial?.bodyJson ?? { type: 'doc', content: [{ type: 'paragraph' }] }
 )
 
-const saveState = ref<'idle' | 'saving' | 'saved' | 'error'>('idle')
+// 'draft'はローカルにのみ下書き保存済み（サーバー未同期）の状態。
+// 'saved'は明示保存（保存/公開ボタン）でサーバーへ反映済みの状態
+const saveState = ref<'idle' | 'draft' | 'saving' | 'saved' | 'error'>('idle')
 const saveErrorMessage = ref<string | null>(null)
 const explicitSaving = ref(false)
 
@@ -135,6 +137,7 @@ function saveDraft() {
   } catch {
     // 容量超過等は執筆の妨げにしないため無視する
   }
+  saveState.value = 'draft'
 }
 
 function clearDraft(key: string) {
@@ -144,6 +147,14 @@ function clearDraft(key: string) {
     // noop
   }
 }
+
+// 復元確認中の下書き。非nullの間、画面左上に復元確認バナーを表示する
+const pendingDraft = ref<ArticleDraft | null>(null)
+const pendingDraftSavedAtLabel = computed(() =>
+  pendingDraft.value
+    ? new Date(pendingDraft.value.savedAt).toLocaleString('ja-JP')
+    : ''
+)
 
 function restoreDraftIfNeeded() {
   let raw: string | null
@@ -160,20 +171,23 @@ function restoreDraftIfNeeded() {
     clearDraft(draftKey())
     return
   }
-  const { savedAt, ...draftFields } = draft
+  const { savedAt: _savedAt, ...draftFields } = draft
   if (stableStringify(draftFields) === lastSavedSnapshot) {
     clearDraft(draftKey())
     return
   }
-  const savedAtLabel = new Date(savedAt).toLocaleString('ja-JP')
-  if (
-    !confirm(
-      `${savedAtLabel}時点の保存されていない変更が見つかりました。復元しますか？`
-    )
-  ) {
-    clearDraft(draftKey())
-    return
-  }
+  pendingDraft.value = draft
+}
+
+function discardPendingDraft() {
+  clearDraft(draftKey())
+  pendingDraft.value = null
+}
+
+function applyPendingDraft() {
+  const draft = pendingDraft.value
+  if (!draft) return
+  const { savedAt: _savedAt, ...draftFields } = draft
   title.value = draft.title
   slug.value = draft.slug
   description.value = draft.description
@@ -183,6 +197,8 @@ function restoreDraftIfNeeded() {
   coverImageId.value = draft.coverImageId
   bodyJson.value = draft.bodyJson
   lastSavedSnapshot = stableStringify(draftFields)
+  saveState.value = 'draft'
+  pendingDraft.value = null
 }
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
@@ -268,6 +284,24 @@ onBeforeUnmount(() => {
 
 <template>
   <div>
+    <div
+      v-if="pendingDraft"
+      class="fixed top-16 right-4 z-20 w-80 rounded-lg border bg-popover p-4 text-popover-foreground shadow-lg"
+    >
+      <p class="text-sm font-medium">
+        未保存の変更があります。復元して編集を続けますか？
+      </p>
+      <p class="mt-1 text-xs text-muted-foreground">
+        {{ pendingDraftSavedAtLabel }}時点の内容です
+      </p>
+      <div class="mt-3 flex justify-end gap-2">
+        <Button variant="outline" size="sm" @click="discardPendingDraft"
+          >変更を破棄する</Button
+        >
+        <Button size="sm" @click="applyPendingDraft">復元して編集する</Button>
+      </div>
+    </div>
+
     <header
       class="sticky top-0 z-10 grid grid-cols-3 items-center gap-2 bg-background/90 px-4 py-3 backdrop-blur"
     >
@@ -289,6 +323,9 @@ onBeforeUnmount(() => {
           <template v-else-if="saveState === 'error'">{{
             saveErrorMessage ?? '保存に失敗しました'
           }}</template>
+          <template v-else-if="saveState === 'draft'"
+            >未保存の変更あり</template
+          >
           <template v-else>保存済み</template>
         </span>
       </div>
