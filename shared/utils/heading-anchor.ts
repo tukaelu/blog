@@ -5,9 +5,19 @@
 // どちらも同じ見出しテキスト配列を出現順に渡せば、この純粋関数が決定的に同じ結果を返す。
 export function buildHeadingAnchors(texts: string[]): string[] {
   const counts = new Map<string, number>()
+  const used = new Set<string>()
   return texts.map(text => {
-    const n = (counts.get(text) ?? 0) + 1
+    let n = (counts.get(text) ?? 0) + 1
+    let anchor = n === 1 ? text : `${text}-${n}`
+    // 生成したサフィックス付きアンカーが、別の見出しの実テキストや既に採番済みの
+    // アンカーと衝突する場合（例: ["A", "A", "A-2"]）、衝突しなくなるまで
+    // サフィックスの番号を進める
+    while (used.has(anchor)) {
+      n += 1
+      anchor = `${text}-${n}`
+    }
     counts.set(text, n)
-    return n === 1 ? text : `${text}-${n}`
+    used.add(anchor)
+    return anchor
   })
 }
