@@ -30,6 +30,7 @@ import { CodeBlockWithFilepath } from './nodes/code-block'
 import { Mermaid } from './nodes/mermaid'
 import AdminMediaPickerModal from '~/components/admin/MediaPickerModal.vue'
 import type { TiptapNode } from '#shared/types/tiptap-nodes'
+import { stableStringify } from '#shared/utils/stable-stringify'
 
 const props = defineProps<{ modelValue: TiptapNode }>()
 const emit = defineEmits<{
@@ -54,6 +55,18 @@ const editor = useEditor({
   },
   onBlur: () => emit('blur'),
 })
+
+// 親から復元（ローカルストレージの下書き等）でmodelValueが書き換えられた場合に
+// エディタ表示へ反映する。onUpdateで送り返した直後の値は一致するため無視される。
+watch(
+  () => props.modelValue,
+  newVal => {
+    if (!editor.value) return
+    if (stableStringify(editor.value.getJSON()) === stableStringify(newVal))
+      return
+    editor.value.commands.setContent(newVal)
+  }
+)
 
 const mediaPickerRef = ref<InstanceType<typeof AdminMediaPickerModal>>()
 function onImageSelected(item: { url: string }) {

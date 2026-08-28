@@ -8,6 +8,7 @@ import {
 } from '@lucide/vue'
 import type { AdminArticleDetail } from '#shared/types/article'
 import type { TiptapNode } from '#shared/types/tiptap-nodes'
+import { stableStringify } from '#shared/utils/stable-stringify'
 import AdminMediaPickerModal from './MediaPickerModal.vue'
 
 const props = defineProps<{ initial: AdminArticleDetail | null }>()
@@ -87,104 +88,147 @@ function currentTagNames(): string[] {
     .filter(Boolean)
 }
 
-// 新規作成時、id発行前は仮のスラッグで作成する。明示保存時にユーザー入力のスラッグへ更新される
-// （spec-article-editing.md §6.1: タイトル/本文への最初の変更をトリガーに自動保存相当でidを発行する）。
-// ダブルクリックや自動保存との競合で二重作成しないよう、実行中のPromiseを共有する。
-let creatingPromise: Promise<string> | null = null
-let isUnmounted = false
-async function ensureCreated(): Promise<string> {
-  if (articleId.value) return articleId.value
-  if (creatingPromise) return creatingPromise
-  creatingPromise = (async () => {
-    const res = await $fetch<{ id: string }>('/api/admin/articles', {
-      method: 'POST',
-      body: {
-        title: title.value || '無題の記事',
-        slug: slug.value || `draft-${Date.now()}`,
-        bodyJson: bodyJson.value,
-        description: description.value || null,
-        tagNames: currentTagNames(),
-        status: 'draft',
-        publishedAt: null,
-      },
-    })
-    articleId.value = res.id
-    // POST中にユーザーが既に画面を離れていた場合、離脱先のページから
-    // 作成直後の編集画面へ強制的に引き戻さない
-    if (!isUnmounted) router.replace(`/admin/articles/${res.id}`)
-    return res.id
-  })()
-  try {
-    return await creatingPromise
-  } finally {
-    creatingPromise = null
+// 自動保存はサーバーへ送らずlocalStorageにのみ保存する（うっかりブラウザを
+// 閉じた場合の復元用途に限定。spec-article-editing.md §6.2）。
+// 新規記事はid未発行の間'new'固定キー、既存記事はidキーで管理する。
+function draftKey(): string {
+  return `article-draft:${articleId.value ?? 'new'}`
+}
+
+type ArticleDraft = {
+  title: string
+  slug: string
+  description: string
+  tagNamesText: string
+  status: 'draft' | 'published'
+  publishedAt: string
+  coverImageId: string
+  bodyJson: TiptapNode
+  savedAt: string
+}
+
+function currentDraftFields(): Omit<ArticleDraft, 'savedAt'> {
+  return {
+    title: title.value,
+    slug: slug.value,
+    description: description.value,
+    tagNamesText: tagNamesText.value,
+    status: status.value,
+    publishedAt: publishedAt.value,
+    coverImageId: coverImageId.value,
+    bodyJson: bodyJson.value,
   }
+}
+
+// 直近でlocalStorageへ書き込んだ内容のスナップショット。blurするだけで
+// 未変更のまま発火するautosaveトリガーで無駄な書き込みをしないための差分判定に使う
+let lastSavedSnapshot = stableStringify(currentDraftFields())
+
+function saveDraft() {
+  const fields = currentDraftFields()
+  const snapshot = stableStringify(fields)
+  if (snapshot === lastSavedSnapshot) return
+  lastSavedSnapshot = snapshot
+  const draft: ArticleDraft = { ...fields, savedAt: new Date().toISOString() }
+  try {
+    localStorage.setItem(draftKey(), JSON.stringify(draft))
+  } catch {
+    // 容量超過等は執筆の妨げにしないため無視する
+  }
+}
+
+function clearDraft(key: string) {
+  try {
+    localStorage.removeItem(key)
+  } catch {
+    // noop
+  }
+}
+
+function restoreDraftIfNeeded() {
+  let raw: string | null
+  try {
+    raw = localStorage.getItem(draftKey())
+  } catch {
+    return
+  }
+  if (!raw) return
+  let draft: ArticleDraft
+  try {
+    draft = JSON.parse(raw)
+  } catch {
+    clearDraft(draftKey())
+    return
+  }
+  const { savedAt, ...draftFields } = draft
+  if (stableStringify(draftFields) === lastSavedSnapshot) {
+    clearDraft(draftKey())
+    return
+  }
+  const savedAtLabel = new Date(savedAt).toLocaleString('ja-JP')
+  if (
+    !confirm(
+      `${savedAtLabel}時点の保存されていない変更が見つかりました。復元しますか？`
+    )
+  ) {
+    clearDraft(draftKey())
+    return
+  }
+  title.value = draft.title
+  slug.value = draft.slug
+  description.value = draft.description
+  tagNamesText.value = draft.tagNamesText
+  status.value = draft.status
+  publishedAt.value = draft.publishedAt
+  coverImageId.value = draft.coverImageId
+  bodyJson.value = draft.bodyJson
+  lastSavedSnapshot = stableStringify(draftFields)
 }
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
-// 発火済みで実行中のautosaveリクエストへの参照。debounceTimerのclearTimeoutは
-// 未発火のタイマーしか止められないため、これを別途保持してsaveExplicitから待ち合わせる
-let autosaveInFlight: Promise<void> | null = null
 
 function triggerAutosave() {
   if (debounceTimer) clearTimeout(debounceTimer)
-  debounceTimer = setTimeout(() => {
-    autosaveInFlight = doAutosave().finally(() => {
-      autosaveInFlight = null
-    })
-  }, 3000)
-}
-
-async function doAutosave() {
-  const id = await ensureCreated()
-  saveState.value = 'saving'
-  saveErrorMessage.value = null
-  try {
-    await $fetch(`/api/admin/articles/${id}/autosave`, {
-      method: 'PATCH',
-      body: {
-        title: title.value,
-        description: description.value || null,
-        bodyJson: bodyJson.value,
-        // slugは空文字だとバリデーションエラーになるため未入力時は送らない
-        ...(slug.value ? { slug: slug.value } : {}),
-        tagNames: currentTagNames(),
-        coverImageId: coverImageId.value || null,
-        publishedAt: toIsoOrNull(publishedAt.value),
-      },
-    })
-    saveState.value = 'saved'
-  } catch {
-    saveState.value = 'error'
-  }
+  debounceTimer = setTimeout(saveDraft, 3000)
 }
 
 async function saveExplicit(newStatus: 'draft' | 'published') {
-  // 保留中（未発火）のautosaveタイマーはキャンセルする。既に発火し実行中の
-  // autosaveリクエストがあれば、その完了を待ってから明示保存を送ることで、
-  // 古い内容のPATCHが明示保存の後に遅れて届いて上書きする競合を防ぐ
+  // explicitSaving.value=trueの反映（ボタンのdisabled化）はDOM更新を待つため、
+  // 反映前の連打による二重POST/PUTをここで同期的にガードする
+  if (explicitSaving.value) return
   if (debounceTimer) clearTimeout(debounceTimer)
-  if (autosaveInFlight) await autosaveInFlight
-  const id = await ensureCreated()
   explicitSaving.value = true
   saveErrorMessage.value = null
+  const draftKeyBefore = draftKey()
+  const body = {
+    title: title.value,
+    slug: slug.value || `draft-${Date.now()}`,
+    bodyJson: bodyJson.value,
+    description: description.value || null,
+    tagNames: currentTagNames(),
+    status: newStatus,
+    publishedAt:
+      newStatus === 'published'
+        ? (toIsoOrNull(publishedAt.value) ?? new Date().toISOString())
+        : toIsoOrNull(publishedAt.value),
+    coverImageId: coverImageId.value || null,
+  }
   try {
-    await $fetch(`/api/admin/articles/${id}`, {
-      method: 'PUT',
-      body: {
-        title: title.value,
-        slug: slug.value,
-        bodyJson: bodyJson.value,
-        description: description.value || null,
-        tagNames: currentTagNames(),
-        status: newStatus,
-        publishedAt:
-          newStatus === 'published'
-            ? (toIsoOrNull(publishedAt.value) ?? new Date().toISOString())
-            : toIsoOrNull(publishedAt.value),
-        coverImageId: coverImageId.value || null,
-      },
-    })
+    if (articleId.value) {
+      await $fetch(`/api/admin/articles/${articleId.value}`, {
+        method: 'PUT',
+        body,
+      })
+    } else {
+      const res = await $fetch<{ id: string }>('/api/admin/articles', {
+        method: 'POST',
+        body,
+      })
+      articleId.value = res.id
+      router.replace(`/admin/articles/${res.id}`)
+    }
+    clearDraft(draftKeyBefore)
+    lastSavedSnapshot = stableStringify(currentDraftFields())
     status.value = newStatus
     saveState.value = 'saved'
   } catch (err) {
@@ -215,8 +259,9 @@ function onTitleEnter(event: KeyboardEvent) {
   editorRef.value?.focus()
 }
 
+onMounted(restoreDraftIfNeeded)
+
 onBeforeUnmount(() => {
-  isUnmounted = true
   if (debounceTimer) clearTimeout(debounceTimer)
 })
 </script>

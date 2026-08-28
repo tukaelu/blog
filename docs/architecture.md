@@ -118,7 +118,6 @@ Nuxt 4の標準構成（`srcDir`が`app/`配下になる構成）をベースと
 │   │       │   └── [id]/
 │   │       │       ├── index.put.ts
 │   │       │       ├── index.delete.ts
-│   │       │       ├── autosave.patch.ts
 │   │       │       └── revisions/
 │   │       │           ├── index.get.ts
 │   │       │           └── [revisionId]/
@@ -485,7 +484,6 @@ Tiptapの`footnote`ノード（§4.2）で表現し、参照元にアンカー�
 | GET/POST/PUT/DELETE | `/api/admin/articles/*`                                       | 記事管理CRUD                                                                        | **必須**（管理者認証）    |
 | GET/POST/DELETE     | `/api/admin/media/*`                                          | メディア管理                                                                        | **必須**                  |
 | PUT                 | `/api/admin/articles/:id`                                     | 記事の明示的保存（下書き保存/公開）。保存の都度リビジョンを作成する                 | **必須**                  |
-| PATCH               | `/api/admin/articles/:id/autosave`                            | 自動保存。リビジョンは作成しない                                                    | **必須**                  |
 | GET                 | `/api/admin/articles/:id/revisions`                           | リビジョン一覧取得                                                                  | **必須**                  |
 | GET                 | `/api/admin/articles/:id/revisions/:revisionId`               | 特定リビジョンのスナップショット取得                                                | **必須**                  |
 | GET                 | `/api/admin/articles/:id/revisions/:revisionId/diff?against=` | 指定リビジョンと直前リビジョン（または `against=current` で現在の内容）との差分取得 | **必須**                  |
@@ -507,13 +505,13 @@ Tiptapの`footnote`ノード（§4.2）で表現し、参照元にアンカー�
 - 記事一覧画面：ステータス(下書き/予約中/公開済み)、更新日時でのソート・フィルタ。予約中は `status = 'published'` かつ `published_at` が未来の記事として計算表示する
 - 記事編集画面：Tiptapエディタを中心に据え、タイトル・スラッグ・タグ・アイキャッチ・公開日時以外の情報は極力視界に入れないミニマルなレイアウトとする(参考：しずかなインターネットのエディタ体験)
 - モバイル向けに、ソフトブレイク(段落を変えない改行)を明示的に入力できる専用ツールバーボタンを用意する
-- 自動保存(一定間隔、またはblur時に `PATCH /api/admin/articles/:id/autosave` を呼び出してドラフト保存。リビジョンは作成しない)
+- 自動保存(一定間隔、またはblur時にサーバーへは送信せず、ブラウザの`localStorage`へドラフト保存する。ブラウザを誤って閉じた場合の復元用途に限定し、サーバー側の記事データ・リビジョンには一切影響しない。詳細は spec-article-editing.md §6.2)
 
 ### 6.2 リビジョン管理（確定）
 
 **保存とリビジョン作成のタイミング**
 
-編集画面の「保存」「公開」操作(＝明示的保存)のたびに `PUT /api/admin/articles/:id` を呼び出し、現在の `articles` レコードを更新すると同時に `article_revisions` へスナップショット(タイトル・概要・`body_json`・ステータス・公開日時)を1件追加する。下書き状態での保存も対象に含める(要件定義書 §5.2)。自動保存は頻度が高くノイズになるため、別エンドポイント(`PATCH .../autosave`)としてリビジョンの対象外とする。
+編集画面の「保存」「公開」操作(＝明示的保存)のたびに `PUT /api/admin/articles/:id`（新規記事なら`POST /api/admin/articles`）を呼び出し、現在の `articles` レコードを更新すると同時に `article_revisions` へスナップショット(タイトル・概要・`body_json`・ステータス・公開日時)を1件追加する。下書き状態での保存も対象に含める(要件定義書 §5.2)。自動保存はサーバーへ送信しない(`localStorage`のみ)ため、記事データ・リビジョンのいずれにも影響しない。
 
 **差分表示の方式**
 

@@ -25,12 +25,14 @@ test('記事を作成して公開すると公開サイトの一覧・詳細に�
 
   await page.getByRole('button', { name: '下書き' }).click()
   // ヘッダーの「保存済み」表示はidle初期状態でも同じ文言になるため保存完了の
-  // 同期には使えない。PUTのレスポンス自体を待ってから次の操作へ進む
+  // 同期には使えない。レスポンス自体を待ってから次の操作へ進む。
+  // 自動保存はサーバーへid発行を要求しなくなったため、新規記事の初回明示保存は
+  // POST /api/admin/articles になる（PUTではない）
   const [saveResponse] = await Promise.all([
     page.waitForResponse(
       res =>
-        /\/api\/admin\/articles\/[^/]+$/.test(res.url()) &&
-        res.request().method() === 'PUT'
+        /\/api\/admin\/articles$/.test(res.url()) &&
+        res.request().method() === 'POST'
     ),
     page.getByRole('menuitem', { name: '公開する' }).click(),
   ])

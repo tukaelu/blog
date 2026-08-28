@@ -3,9 +3,11 @@ import { test, expect } from '@playwright/test'
 // docs/specs/testing.md §5.2「リビジョン」シナリオ。
 // 記事を複数回明示保存すると、リビジョン一覧・差分表示・復元が機能することを確認する。
 //
-// 新規記事の初回明示保存では、記事作成API（POST）自体がリビジョンを1件作成した直後に
-// 保存API（PUT）がさらに1件作成するため、2回の明示保存で3件のリビジョンが生成される
-// （server/api/admin/articles/index.post.ts, [id]/index.put.ts）。
+// 自動保存はサーバーへid発行を要求しない（localStorageへの下書き保存のみ）ため、
+// 新規記事はid未発行のまま初回の明示保存を迎える。初回はPOST /api/admin/articles、
+// 2回目以降はPUT /api/admin/articles/:idが呼ばれ、いずれもリビジョンを1件作成するため
+// （server/api/admin/articles/index.post.ts, [id]/index.put.ts）、2回の明示保存で
+// 2件のリビジョンが生成される。
 test('記事を複数回保存するとリビジョンの一覧・差分・復元が機能する', async ({
   page,
 }) => {
@@ -30,13 +32,13 @@ test('記事を複数回保存するとリビジョンの一覧・差分・復�
   await page.keyboard.press('Escape')
 
   // ヘッダーの「保存済み」表示はidle初期状態でも同じ文言になるため保存完了の
-  // 同期には使えない。都度PUTのレスポンス自体を待ってから次の操作へ進む
-  async function saveAsDraft() {
+  // 同期には使えない。都度レスポンス自体を待ってから次の操作へ進む
+  async function saveAsDraft(method: 'POST' | 'PUT') {
+    const urlPattern =
+      method === 'POST' ? /\/api\/admin\/articles$/ : /\/api\/admin\/articles\/[^/]+$/
     const [res] = await Promise.all([
       page.waitForResponse(
-        r =>
-          /\/api\/admin\/articles\/[^/]+$/.test(r.url()) &&
-          r.request().method() === 'PUT'
+        r => urlPattern.test(r.url()) && r.request().method() === method
       ),
       page.getByRole('menuitem', { name: '下書きにする' }).click(),
     ])
@@ -44,7 +46,7 @@ test('記事を複数回保存するとリビジョンの一覧・差分・復�
   }
 
   await page.getByRole('button', { name: '下書き' }).click()
-  await saveAsDraft()
+  await saveAsDraft('POST')
   // 初回保存で /admin/articles/new から /admin/articles/{id}（UUID）へ遷移し
   // ArticleFormが再マウントされる。遷移完了（"new"ではなくUUID形式のURLになること）を
   // 待ってから次の操作に進む
@@ -61,12 +63,12 @@ test('記事を複数回保存するとリビジョンの一覧・差分・復�
   await expect(titleField).toHaveValue(titleV2)
 
   await page.getByRole('button', { name: '下書き' }).click()
-  await saveAsDraft()
+  await saveAsDraft('PUT')
 
   await page.getByTitle('リビジョン履歴').click()
   await expect(page).toHaveURL(/\/admin\/articles\/.+\/revisions$/)
 
-  await expect(page.getByText(/^#\d+ /)).toHaveCount(3)
+  await expect(page.getByText(/^#\d+ /)).toHaveCount(2)
   await expect(page.getByText(titleV1, { exact: false }).first()).toBeVisible()
   await expect(page.getByText(titleV2, { exact: false }).first()).toBeVisible()
 
