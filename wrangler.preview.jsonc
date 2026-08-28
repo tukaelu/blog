@@ -11,12 +11,11 @@
   "observability": {
     "enabled": true,
   },
-  // database_id は `wrangler d1 create blog-cms-preview` 実行後に置き換える
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "blog-cms-preview",
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "b0440c53-3722-40b2-8368-7f8611fb4080",
     },
   ],
   "r2_buckets": [{ "binding": "IMAGES", "bucket_name": "blog-cms-preview" }],

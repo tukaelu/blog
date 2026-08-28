@@ -13,12 +13,11 @@
   "observability": {
     "enabled": true,
   },
-  // database_id は `wrangler d1 create blog-cms-production` 実行後に置き換える
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "blog-cms-production",
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "46f32890-d7d5-4a6e-b860-2101246426e5",
     },
   ],
   "r2_buckets": [{ "binding": "IMAGES", "bucket_name": "blog-cms-production" }],
