@@ -191,8 +191,8 @@ async function setDraft(article: AdminArticleSummary) {
         記事がありません。「新規作成」から最初の記事を書いてみましょう。
       </p>
       <template v-else>
-        <div class="overflow-hidden rounded-lg border">
-          <Table class="table-fixed">
+        <div class="overflow-x-auto rounded-lg border">
+          <Table class="min-w-[640px] table-fixed">
             <TableHeader>
               <TableRow class="bg-muted/50 hover:bg-muted/50">
                 <TableHead>タイトル</TableHead>
