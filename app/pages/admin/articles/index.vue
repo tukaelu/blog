@@ -192,14 +192,18 @@ async function setDraft(article: AdminArticleSummary) {
       </p>
       <template v-else>
         <div class="overflow-x-auto rounded-lg border">
-          <Table class="min-w-[640px] table-fixed">
+          <Table class="min-w-[420px] table-fixed sm:min-w-[640px]">
             <TableHeader>
               <TableRow class="bg-muted/50 hover:bg-muted/50">
                 <TableHead>タイトル</TableHead>
                 <TableHead class="w-28">ステータス</TableHead>
-                <TableHead class="w-20 text-right">文字数</TableHead>
-                <TableHead class="w-20 text-right">いいね</TableHead>
-                <TableHead class="w-24">公開日</TableHead>
+                <TableHead class="hidden w-20 text-right sm:table-cell"
+                  >文字数</TableHead
+                >
+                <TableHead class="hidden w-20 text-right sm:table-cell"
+                  >いいね</TableHead
+                >
+                <TableHead class="hidden w-24 sm:table-cell">公開日</TableHead>
                 <TableHead class="w-24">更新日</TableHead>
                 <TableHead class="w-10" />
               </TableRow>
@@ -245,15 +249,18 @@ async function setDraft(article: AdminArticleSummary) {
                     }}
                   </Badge>
                 </TableCell>
-                <TableCell class="text-right text-xs text-muted-foreground">{{
-                  article.characterCount.toLocaleString()
-                }}</TableCell>
-                <TableCell class="text-right text-xs text-muted-foreground">{{
-                  article.likeCount.toLocaleString()
-                }}</TableCell>
-                <TableCell class="text-xs text-muted-foreground">{{
-                  formatDate(article.publishedAt)
-                }}</TableCell>
+                <TableCell
+                  class="hidden text-right text-xs text-muted-foreground sm:table-cell"
+                  >{{ article.characterCount.toLocaleString() }}</TableCell
+                >
+                <TableCell
+                  class="hidden text-right text-xs text-muted-foreground sm:table-cell"
+                  >{{ article.likeCount.toLocaleString() }}</TableCell
+                >
+                <TableCell
+                  class="hidden text-xs text-muted-foreground sm:table-cell"
+                  >{{ formatDate(article.publishedAt) }}</TableCell
+                >
                 <TableCell class="text-xs text-muted-foreground">{{
                   formatDate(article.updatedAt)
                 }}</TableCell>
