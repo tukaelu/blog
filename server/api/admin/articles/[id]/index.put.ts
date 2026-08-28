@@ -42,6 +42,12 @@ export default defineEventHandler(async event => {
         statusMessage: 'slug already exists',
       })
     }
+    if (isForeignKeyConstraintError(err)) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'coverImageId does not reference an existing media',
+      })
+    }
     throw err
   }
 
