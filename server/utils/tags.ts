@@ -1,4 +1,4 @@
-import { eq, inArray } from 'drizzle-orm'
+import { eq, inArray, or } from 'drizzle-orm'
 import type { ArticleTag } from '#shared/types/article'
 import { slugifyTagName } from '#shared/utils/slug'
 import type { AppDatabase } from './db'
@@ -28,23 +28,30 @@ export async function resolveTagIds(
   // IDの解決も1回のSELECTにまとめる。
   // SELECTしてから未存在時のみINSERTする方式は、同名タグの同時作成で
   // UNIQUE制約違反による生エラーになるレースがあるため、
-  // INSERT ... ON CONFLICT DO NOTHING（name一致時のみ）+ 再SELECTで冪等に解決する。
+  // INSERT ... ON CONFLICT DO NOTHING + 再SELECTで冪等に解決する。
+  // targetをtags.nameに限定すると、大文字小文字や記号違いで異なる名前が
+  // 同一slugに正規化される場合（slugも独立したUNIQUE制約を持つ）にslug側の
+  // 制約違反で生の500になるため、targetを指定せずname/slugどちらの
+  // 制約違反でもconflictを無視する。
+  const slugByName = new Map(names.map(name => [name, slugifyTagName(name)]))
+  const slugs = [...new Set(slugByName.values())]
   const inserts = names.map(name =>
     db
       .insert(tags)
-      .values({ id: crypto.randomUUID(), name, slug: slugifyTagName(name) })
-      .onConflictDoNothing({ target: tags.name })
+      .values({ id: crypto.randomUUID(), name, slug: slugByName.get(name)! })
+      .onConflictDoNothing()
   )
   await db.batch(inserts as [(typeof inserts)[number], ...typeof inserts])
 
   const rows = await db
-    .select({ id: tags.id, name: tags.name })
+    .select({ id: tags.id, name: tags.name, slug: tags.slug })
     .from(tags)
-    .where(inArray(tags.name, names))
+    .where(or(inArray(tags.name, names), inArray(tags.slug, slugs)))
   const idByName = new Map(rows.map(row => [row.name, row.id]))
+  const idBySlug = new Map(rows.map(row => [row.slug, row.id]))
 
   return names
-    .map(name => idByName.get(name))
+    .map(name => idByName.get(name) ?? idBySlug.get(slugByName.get(name)!))
     .filter((id): id is string => !!id)
 }
 
