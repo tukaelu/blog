@@ -668,24 +668,24 @@ Nuxt を Cloudflare Workers にデプロイする方式として、以下の2択
 ```jsonc
 // wrangler.jsonc（本番用、リポジトリのデフォルト）
 {
-  "name": "bonsai-blog",
+  "name": "blog-cms",
   "main": "./.output/server/index.mjs",
   "assets": { "directory": "./.output/public", "binding": "ASSETS" },
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "blog-cms-production",
+      "database_name": "blog-cms",
       "database_id": "...",
     },
   ],
-  "r2_buckets": [{ "binding": "IMAGES", "bucket_name": "blog-cms-production" }],
+  "r2_buckets": [{ "binding": "IMAGES", "bucket_name": "blog-cms" }],
 }
 ```
 
 ```jsonc
 // wrangler.preview.jsonc（プレビュー用、name/main/assets等は本番と同一、D1・R2のみ差し替え）
 {
-  "name": "bonsai-blog",
+  "name": "blog-cms",
   "main": "./.output/server/index.mjs",
   "assets": { "directory": "./.output/public", "binding": "ASSETS" },
   "d1_databases": [

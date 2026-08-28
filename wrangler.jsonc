@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "bonsai-blog",
+  "name": "blog-cms",
   "compatibility_date": "2026-08-20",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "main": "./.output/server/index.mjs",
@@ -16,11 +16,11 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "blog-cms-production",
-      "database_id": "46f32890-d7d5-4a6e-b860-2101246426e5",
+      "database_name": "blog-cms",
+      "database_id": "eb3b43d9-ea8b-4532-97d4-525b68cee0ad",
     },
   ],
-  "r2_buckets": [{ "binding": "IMAGES", "bucket_name": "blog-cms-production" }],
+  "r2_buckets": [{ "binding": "IMAGES", "bucket_name": "blog-cms" }],
   // いいねAPIの濫用対策（architecture.md §8.2）。同一IPからの連打を制限する
   "ratelimits": [
     {
