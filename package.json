@@ -15,7 +15,7 @@
     "postinstall": "nuxt prepare",
     "check": "nuxi typecheck",
     "test:unit": "vitest run",
-    "test:e2e": "wrangler d1 migrations apply blog-cms-production --local && pnpm seed:e2e && playwright test",
+    "test:e2e": "wrangler d1 migrations apply blog-cms --local && pnpm seed:e2e && playwright test",
     "seed:e2e": "vite-node --config vitest.config.ts scripts/seed-test-data.ts --",
     "fmt": "prettier --write .",
     "fmt:check": "prettier --check .",
