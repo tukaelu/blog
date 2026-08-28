@@ -273,7 +273,9 @@ async function migratePost(
       .where(eq(articles.slug, slug))
       .get()
     if (existing) {
-      throw new Error(`slugが既にDBへ登録済みです（処理を中断します）: ${slug}`)
+      throw new Error(
+        `slugがDBへ既に登録済みで重複しています（処理を中断します）: ${slug}`
+      )
     }
 
     const id = randomUUID()

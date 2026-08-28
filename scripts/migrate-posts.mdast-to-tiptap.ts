@@ -179,15 +179,27 @@ function splitParagraphAroundImages(
   return blocks
 }
 
+// レイアウト用のdivタグ等で複数画像を囲むと、remark-parseはタグごと1つの
+// 生HTMLブロックとして扱ってしまい、中のMarkdown画像記法はパースされない
+// （実データで確認済み: contents/posts/ja/2024/prairiecard）。HTML自体は変換
+// できないが、中の画像記法だけは正規表現で救出してblockから漏れないようにする。
+const IMAGE_IN_HTML_RE = /!\[([^\]]*)\]\(([^)]+)\)/g
+
 function mapHtmlBlock(node: MdNode, manualReview: string[]): TiptapNode[] {
   const raw = (node.value ?? '').trim()
   if (!raw) return []
   const linkCard = raw.match(EMBEDDED_LINK_RE)
   if (linkCard) return [{ type: 'linkCard', attrs: { url: linkCard[1] } }]
+
+  const images: TiptapNode[] = [...raw.matchAll(IMAGE_IN_HTML_RE)].map(m => ({
+    type: 'image',
+    attrs: { src: m[2], alt: m[1] || '' },
+  }))
+
   manualReview.push(
-    `未対応のHTML/JSX構文をスキップしました: ${raw.slice(0, 120)}`
+    `未対応のHTML/JSX構文をスキップしました${images.length ? `（内部の画像${images.length}件は救出済み）` : ''}: ${raw.slice(0, 120)}`
   )
-  return []
+  return images
 }
 
 function mapInlineChildren(
