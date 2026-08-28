@@ -25,4 +25,15 @@ describe('isBlockedHost', () => {
     expect(isBlockedHost('169.254.169.254')).toBe(true)
     expect(isBlockedHost('fe80::1')).toBe(true)
   })
+
+  it('ブラケット付きIPv6ユニークローカルアドレスも拒否する', () => {
+    expect(isBlockedHost('[fc00::1]')).toBe(true)
+    expect(isBlockedHost('[fd00::1]')).toBe(true)
+    expect(isBlockedHost('fc00::1')).toBe(true)
+  })
+
+  it('fc/fdで始まる通常ドメインは誤ってブロックしない', () => {
+    expect(isBlockedHost('fc2.com')).toBe(false)
+    expect(isBlockedHost('fdic.gov')).toBe(false)
+  })
 })

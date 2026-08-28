@@ -24,15 +24,20 @@ export function isBlockedHost(hostname: string): boolean {
   const ipv4 = host.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/)
   if (ipv4) return isBlockedIpv4(ipv4[1], ipv4[2])
 
-  if (host === '::1' || host === '[::1]') return true // loopback
-  if (host.startsWith('fe80:') || host.startsWith('[fe80:')) return true // link-local
-  if (host.startsWith('fc') || host.startsWith('fd')) return true // unique local
+  // ブラケット付き（[::1]等）・なし双方に対応するため、判定前にブラケットを取り除く。
+  // hostname自体にコロンが含まれるのはIPv6リテラルの場合のみのため、これでドメイン名
+  // （例: fc2.com）との誤判定も防げる。
+  const unbracketed = host.replace(/^\[/, '').replace(/\]$/, '')
+  if (!unbracketed.includes(':')) return false
+
+  if (unbracketed === '::1') return true // loopback
+  if (unbracketed.startsWith('fe80:')) return true // link-local
+  if (unbracketed.startsWith('fc') || unbracketed.startsWith('fd')) return true // unique local
 
   // IPv4射影IPv6アドレス（例: ::ffff:127.0.0.1, [::ffff:169.254.169.254]）
-  const mapped = host
-    .replace(/^\[/, '')
-    .replace(/\]$/, '')
-    .match(/^::ffff:(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/)
+  const mapped = unbracketed.match(
+    /^::ffff:(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/
+  )
   if (mapped) return isBlockedIpv4(mapped[1], mapped[2])
 
   return false
