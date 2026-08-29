@@ -25,7 +25,7 @@ definePageMeta({ layout: false })
 
 const filter = ref<'all' | DisplayStatus>('all')
 const search = ref('')
-const sortOrder = ref<'updatedDesc' | 'publishedDesc'>('updatedDesc')
+const sortOrder = ref<'updatedDesc' | 'publishedDesc'>('publishedDesc')
 const page = ref(1)
 const pageSize = ref(10)
 
@@ -203,8 +203,8 @@ async function setDraft(article: AdminArticleSummary) {
                 <TableHead class="hidden w-20 text-right sm:table-cell"
                   >いいね</TableHead
                 >
-                <TableHead class="hidden w-24 sm:table-cell">公開日</TableHead>
-                <TableHead class="w-24">更新日</TableHead>
+                <TableHead class="w-24">公開日</TableHead>
+                <TableHead class="hidden w-24 sm:table-cell">更新日</TableHead>
                 <TableHead class="w-10" />
               </TableRow>
             </TableHeader>
@@ -257,13 +257,13 @@ async function setDraft(article: AdminArticleSummary) {
                   class="hidden text-right text-xs text-muted-foreground sm:table-cell"
                   >{{ article.likeCount.toLocaleString() }}</TableCell
                 >
+                <TableCell class="text-xs text-muted-foreground">{{
+                  formatDate(article.publishedAt)
+                }}</TableCell>
                 <TableCell
                   class="hidden text-xs text-muted-foreground sm:table-cell"
-                  >{{ formatDate(article.publishedAt) }}</TableCell
+                  >{{ formatDate(article.updatedAt) }}</TableCell
                 >
-                <TableCell class="text-xs text-muted-foreground">{{
-                  formatDate(article.updatedAt)
-                }}</TableCell>
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger as-child>
