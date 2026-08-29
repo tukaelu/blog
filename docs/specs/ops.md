@@ -185,7 +185,7 @@ Workersの`ctx.waitUntil()`を用いて、レスポンス送信後にバック�
 | ローカルでの認証                      | 無条件にバイパスする                                                                                                                                     |
 | プレビュー環境のデータ分離            | 本番と別のD1・R2・APIキーを使用する                                                                                                                      |
 | プレビュー環境の認証保護              | 公開ページを含めた全体をCloudflare Accessで保護する（Worker単位のAccessポリシー、「プレビューデプロイのみ」スコープを使用）                              |
-| Cloudflare AccessのIdP                | Cloudflareアカウントログイン（2026-08-28変更、当初案はGoogleアカウント連携だったが運用の単純さを優先しユーザー判断で変更）                              |
+| Cloudflare AccessのIdP                | Cloudflareアカウントログイン（2026-08-28変更、当初案はGoogleアカウント連携だったが運用の単純さを優先しユーザー判断で変更）                               |
 | Cloudflare Accessのセッション有効期間 | 24時間                                                                                                                                                   |
 | Backblaze B2導入検討のトリガー        | R2の容量が1GBを超えたら検討を開始する                                                                                                                    |
 | 監視・可観測性の方式                  | OpenTelemetry（`@microlabs/otel-cf-workers`）でMackerelへエクスポートする。エンドポイントはOTLP/HTTP版（`https://otlp-vaxila.mackerelio.com`）を使用する |

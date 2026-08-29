@@ -35,7 +35,9 @@ test('記事を複数回保存するとリビジョンの一覧・差分・復�
   // 同期には使えない。都度レスポンス自体を待ってから次の操作へ進む
   async function saveAsDraft(method: 'POST' | 'PUT') {
     const urlPattern =
-      method === 'POST' ? /\/api\/admin\/articles$/ : /\/api\/admin\/articles\/[^/]+$/
+      method === 'POST'
+        ? /\/api\/admin\/articles$/
+        : /\/api\/admin\/articles\/[^/]+$/
     const [res] = await Promise.all([
       page.waitForResponse(
         r => urlPattern.test(r.url()) && r.request().method() === method

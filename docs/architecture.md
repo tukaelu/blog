@@ -479,7 +479,7 @@ Tiptapの`footnote`ノード（§4.2）で表現し、参照元にアンカー�
 | GET                 | `/api/tags/:slug/articles`                                    | タグ別記事一覧（ページネーション付き）                                              | 不要                      |
 | GET                 | `/api/search?q=`                                              | 全文検索                                                                            | 不要                      |
 | POST                | `/api/articles/:id/like`                                      | いいね登録                                                                          | 不要（Rate Limiting適用） |
-| GET                 | `/rss.xml`                                                     | RSSフィード（`/api`プレフィックスなし、§4.3参照）                                   | 不要                      |
+| GET                 | `/rss.xml`                                                    | RSSフィード（`/api`プレフィックスなし、§4.3参照）                                   | 不要                      |
 | GET                 | `/media/:key`                                                 | 画像配信（`/cdn-cgi/image/<options>/`と組み合わせてオンザフライ変換）               | 不要                      |
 | GET                 | `/api/og/:slug`                                               | OGP画像生成                                                                         | 不要（キャッシュ利用）    |
 | GET/POST/PUT/DELETE | `/api/admin/articles/*`                                       | 記事管理CRUD                                                                        | **必須**（管理者認証）    |

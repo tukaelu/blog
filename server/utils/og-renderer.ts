@@ -84,7 +84,11 @@ export async function renderOgImage(
                 src: 'avatar',
                 width: AVATAR_SIZE,
                 height: AVATAR_SIZE,
-                style: { marginRight: 16, width: AVATAR_SIZE, height: AVATAR_SIZE },
+                style: {
+                  marginRight: 16,
+                  width: AVATAR_SIZE,
+                  height: AVATAR_SIZE,
+                },
               }),
               text(SITE_DOMAIN, {
                 color: '#27272a',
