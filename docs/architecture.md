@@ -107,10 +107,7 @@ Nuxt 4の標準構成（`srcDir`が`app/`配下になる構成）をベースと
 │   │   ├── tags/[slug]/articles.get.ts
 │   │   ├── search.get.ts
 │   │   ├── articles/[id]/like.post.ts
-│   │   ├── rss.xml.get.ts
-│   │   ├── sitemap.xml.get.ts
 │   │   ├── og/[slug].get.ts        # OGP画像生成（takumi-rs、architecture.md §10）
-│   │   ├── media/[key].get.ts      # 画像配信（spec-media.md §4.4）
 │   │   └── admin/
 │   │       ├── articles/
 │   │       │   ├── index.get.ts
@@ -134,6 +131,10 @@ Nuxt 4の標準構成（`srcDir`が`app/`配下になる構成）をベースと
 │   │           ├── outline.post.ts
 │   │           ├── suggest-title.post.ts
 │   │           └── suggest-slug.post.ts
+│   ├── routes/                     # /apiプレフィックスなしで公開するルート
+│   │   ├── rss.xml.get.ts          # spec-public-site.md §4.6
+│   │   ├── sitemap.xml.get.ts      # spec-public-site.md §4.7
+│   │   └── media/[key].get.ts      # 画像配信（spec-media.md §4.4）
 │   ├── middleware/                 # サーバー側ミドルウェア（認証チェック等）
 │   └── utils/                      # D1クエリヘルパー、AI Gatewayクライアント、TOC/読了時間算出、OTEL計装設定（`instrument()`、spec-ops.md §8）等
 ├── shared/                         # クライアント・サーバー共通の型定義
@@ -435,7 +436,7 @@ NodeRenderer(node)
 | 記事詳細                 | `/posts/:slug`        | `GET /api/articles/:slug`                          |
 | タグ別一覧               | `/tags/:slug`（想定） | `GET /api/tags/:slug/articles`（新規追加、§5参照） |
 | 検索結果                 | `/search`             | `GET /api/search?q=`                               |
-| RSSフィード              | `/rss.xml`            | `GET /api/rss.xml`                                 |
+| RSSフィード              | `/rss.xml`            | `GET /rss.xml`（動的生成）                         |
 | サイトマップ             | `/sitemap.xml`        | 動的生成（公開記事一覧＋タグ一覧から）             |
 | OGP画像                  | `/api/og/:slug`       | `GET /api/og/:slug`（§10参照）                     |
 | 404ページ                | 任意の未定義パス      | Nuxtの標準エラーページ機構                         |
@@ -478,7 +479,7 @@ Tiptapの`footnote`ノード（§4.2）で表現し、参照元にアンカー�
 | GET                 | `/api/tags/:slug/articles`                                    | タグ別記事一覧（ページネーション付き）                                              | 不要                      |
 | GET                 | `/api/search?q=`                                              | 全文検索                                                                            | 不要                      |
 | POST                | `/api/articles/:id/like`                                      | いいね登録                                                                          | 不要（Rate Limiting適用） |
-| GET                 | `/api/rss.xml`                                                | RSSフィード                                                                         | 不要                      |
+| GET                 | `/rss.xml`                                                     | RSSフィード（`/api`プレフィックスなし、§4.3参照）                                   | 不要                      |
 | GET                 | `/media/:key`                                                 | 画像配信（`/cdn-cgi/image/<options>/`と組み合わせてオンザフライ変換）               | 不要                      |
 | GET                 | `/api/og/:slug`                                               | OGP画像生成                                                                         | 不要（キャッシュ利用）    |
 | GET/POST/PUT/DELETE | `/api/admin/articles/*`                                       | 記事管理CRUD                                                                        | **必須**（管理者認証）    |

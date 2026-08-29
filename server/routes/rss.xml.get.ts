@@ -3,6 +3,7 @@ import { SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from '#shared/constants'
 import { articles } from '../database/schema'
 
 // spec-public-site.md §4.6: 公開済み記事を新しい順に最大20件配信する
+// /api プレフィックスを付けないため server/routes 配下に配置する。
 export default defineEventHandler(async event => {
   const db = useDrizzle(event)
 

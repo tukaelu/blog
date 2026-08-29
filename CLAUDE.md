@@ -65,8 +65,9 @@ pnpm cf-typegen   # Regenerate worker-configuration.d.ts from wrangler bindings
 │   └── lib/
 ├── server/                # Nitro API Routes
 │   ├── api/
-│   │   ├── articles/、tags/、og/       # 公開API
+│   │   ├── articles/、tags/、og/、rss.xml # 公開API
 │   │   └── admin/                     # 管理API（記事CRUD、リビジョン、メディア、AI支援）
+│   ├── routes/            # /apiプレフィックスなしで公開するルート（sitemap.xml、media配信等）
 │   ├── database/schema.ts # Drizzleスキーマ（D1）
 │   ├── middleware/
 │   └── utils/
