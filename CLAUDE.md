@@ -50,6 +50,7 @@ pnpm cf-typegen   # Regenerate worker-configuration.d.ts from wrangler bindings
 
 ```
 ├── app/                  # Nuxt本体（srcDir）
+│   ├── assets/css/
 │   ├── components/
 │   │   ├── editor/       # Tiptapエディタ本体、独自ノード
 │   │   ├── admin/        # 管理画面用コンポーネント
@@ -62,16 +63,19 @@ pnpm cf-typegen   # Regenerate worker-configuration.d.ts from wrangler bindings
 │   │   ├── posts/        # 記事詳細
 │   │   ├── tags/
 │   │   └── page/         # ページネーション
-│   └── lib/
+│   ├── lib/
+│   └── utils/            # article-status、highlighter、snippet等（テストも同居）
 ├── server/                # Nitro API Routes
 │   ├── api/
-│   │   ├── articles/、tags/、og/、rss.xml # 公開API
+│   │   ├── articles/、tags/、og/、search # 公開API
 │   │   └── admin/                     # 管理API（記事CRUD、リビジョン、メディア、AI支援）
-│   ├── routes/            # /apiプレフィックスなしで公開するルート（sitemap.xml、media配信等）
+│   ├── routes/            # /apiプレフィックスなしで公開するルート（sitemap.xml、rss.xml、media配信等）
 │   ├── database/schema.ts # Drizzleスキーマ（D1）
 │   ├── middleware/
+│   ├── types/             # env.d.ts等
 │   └── utils/
 ├── shared/                # client/server共通の型（記事、Tiptapノード、AI）
+│   ├── constants.ts
 │   ├── types/
 │   └── utils/             # stable-stringify等
 ├── migrations/            # D1 SQLマイグレーション（Wrangler既定パス）
@@ -80,8 +84,9 @@ pnpm cf-typegen   # Regenerate worker-configuration.d.ts from wrangler bindings
 ├── tests/e2e/              # Playwright E2Eテスト
 ├── docs/
 │   ├── requirements.md / architecture.md
-│   ├── ops-setup-checklist.md   # 運用セットアップの進捗トラッカー
-│   └── specs/                   # 機能仕様書（article-editing / ai-assist / media / ops / testing 等）
+│   ├── ops-setup-checklist.md      # 運用セットアップの進捗トラッカー
+│   ├── cloudflare-redirect-rules.md
+│   └── specs/                      # 機能仕様書（migration / article-editing / public-site / ai-assist / media / ops / testing）
 ├── wrangler.jsonc          # 本番バインディング定義
 ├── wrangler.preview.jsonc  # プレビュー環境バインディング（CIがビルド前にwrangler.jsoncへ差し替え）
 └── nuxt.config.ts
