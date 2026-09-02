@@ -54,7 +54,7 @@
     "unwasm": "^0.6.0",
     "vue": "^3.5.42",
     "vue-router": "^5.3.0",
-    "zod": "^4.4.3"
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@playwright/test": "1.62.1",
