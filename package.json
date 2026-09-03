@@ -63,7 +63,7 @@
     "@types/node": "26.4.0",
     "drizzle-kit": "0.31.10",
     "nitro-cloudflare-dev": "0.2.2",
-    "prettier": "3.8.4",
+    "prettier": "3.9.6",
     "shadcn-nuxt": "2.8.2",
     "tailwindcss": "4.3.3",
     "typescript": "5.9.3",
