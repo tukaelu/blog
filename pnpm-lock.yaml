@@ -9,7 +9,7 @@ importers:
   .:
     dependencies:
       '@lucide/vue':
-        specifier: ^1.38.0
+        specifier: ^1.39.0
         version: 1.39.0(vue@3.5.42(typescript@5.9.3))
       '@shikijs/core':
         specifier: ^4.4.3
