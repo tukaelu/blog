@@ -24,7 +24,7 @@ importers:
         specifier: ^4.4.3
         version: 4.4.3
       '@takumi-rs/helpers':
-        specifier: ^2.13.3
+        specifier: ^2.13.4
         version: 2.13.5
       '@takumi-rs/wasm':
         specifier: ^2.13.3
