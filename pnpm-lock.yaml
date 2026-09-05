@@ -27,7 +27,7 @@ importers:
         specifier: ^2.13.5
         version: 2.13.5
       '@takumi-rs/wasm':
-        specifier: ^2.13.4
+        specifier: ^2.13.5
         version: 2.13.5(csstype@3.2.3)
       '@tiptap/core':
         specifier: ^3.31.0
