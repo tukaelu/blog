@@ -29,7 +29,7 @@
     "@shikijs/langs-precompiled": "^4.4.3",
     "@shikijs/themes": "^4.4.3",
     "@takumi-rs/helpers": "^2.13.5",
-    "@takumi-rs/wasm": "^2.13.4",
+    "@takumi-rs/wasm": "^2.13.5",
     "@tiptap/core": "^3.31.0",
     "@tiptap/extension-code-block": "^3.31.0",
     "@tiptap/extension-image": "^3.31.0",
